@@ -5,7 +5,6 @@ _This README contains basic information about the project and its artifacts. If 
 
 ## Team Members
 - Jaden Dancy
-- MEMBER2
 - Keelon Gilliam
 - Selina Mak
 - Duy Minh Bui
