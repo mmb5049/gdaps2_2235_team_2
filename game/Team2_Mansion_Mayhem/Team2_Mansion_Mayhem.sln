@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Team2_Mansion_Mayhem", "Team2_Mansion_Mayhem.csproj", "{BB047562-C408-4546-A7AF-2E192A3CD24F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB047562-C408-4546-A7AF-2E192A3CD24F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB047562-C408-4546-A7AF-2E192A3CD24F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB047562-C408-4546-A7AF-2E192A3CD24F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB047562-C408-4546-A7AF-2E192A3CD24F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {51FD375B-3CF3-4815-948D-905EFBE15EDF}
+	EndGlobalSection
+EndGlobal
