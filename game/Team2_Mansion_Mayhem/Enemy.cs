@@ -9,21 +9,23 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Team2_Mansion_Mayhem
 {
-    internal abstract class Enemy
+    internal abstract class Enemy: IDebug
     {
         // fields
-        private Texture2D texture;
-        private Vector2 position;
-        private int health;
-        private int defense;
-        private int damage;
-        private int speed;
-        private bool alive = true;
+        protected Texture2D texture;
+        protected Vector2 position;
+        protected int health;
+        protected int maxHealth;
+        protected int defense;
+        protected int damage;
+        protected int speed;
+        protected bool alive = true;
 
         // constructor
         public Enemy(Vector2 position, int health, int damage, int speed)
         {
             this.position = position;
+            this.maxHealth = health;
             this.health = health;
             this.damage = damage;
             this.speed = speed;
@@ -57,6 +59,18 @@ namespace Team2_Mansion_Mayhem
             set { this.position.Y = value; }
         }
 
+        public virtual string DebugStats
+        {
+            //return a list of stats to be printed 
+            get
+            {
+                return
+                 $"Health: {health}/{maxHealth} \n " +
+                 $"Defense: {defense} \n " +
+                 $"Damage: {damage}\n " +
+                 $"Position: ({X}, {Y})";
+            }
+        }
         //method
         public abstract void Update();
 
@@ -98,5 +112,5 @@ namespace Team2_Mansion_Mayhem
         }
 
         
-    }
+    }//end of class
 }

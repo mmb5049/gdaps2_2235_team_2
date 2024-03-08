@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using System.Net;
+using System.Transactions;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -13,12 +16,24 @@ namespace Team2_Mansion_Mayhem
 
     public class Game1 : Game
     {
+        //game controllers
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private bool debugEnabled;
 
+        //control states
         private GameState currentState;
         private KeyboardState kbState;
         private KeyboardState preKbState;
+
+        //fonts
+        private SpriteFont debugFont;
+
+        //textures
+
+        //misc
+        private int windowHeight;
+        private int windowWidth;
 
         public Game1()
         {
@@ -27,6 +42,10 @@ namespace Team2_Mansion_Mayhem
             IsMouseVisible = true;
             currentState = GameState.MainMenu;
             kbState = new KeyboardState();
+            debugEnabled = false;
+
+            windowHeight = _graphics.PreferredBackBufferHeight;
+            windowWidth = _graphics.PreferredBackBufferWidth;
         }
 
         protected override void Initialize()
@@ -41,6 +60,7 @@ namespace Team2_Mansion_Mayhem
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            debugFont = Content.Load<SpriteFont>("Fonts/Debugfont");
         }
 
         protected override void Update(GameTime gameTime)
@@ -49,6 +69,12 @@ namespace Team2_Mansion_Mayhem
                 Exit();
 
             kbState = Keyboard.GetState();
+
+            //toggle debug if the user presses Tilde (~)
+            if (kbState.IsKeyDown(Keys.OemTilde) && preKbState.IsKeyUp(Keys.OemTilde)) 
+            { 
+                debugEnabled = !debugEnabled;
+            }
             switch (currentState)
             {
                 case GameState.MainMenu:
@@ -80,9 +106,17 @@ namespace Team2_Mansion_Mayhem
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            _spriteBatch.Begin();
             // TODO: Add your drawing code here
 
+            if (debugEnabled) 
+            {
+                _spriteBatch.DrawString(debugFont, $"GameState: {currentState}", new Vector2(5, windowHeight - 18), Color.Black);
+            }
+
             base.Draw(gameTime);
+
+            _spriteBatch.End();
         }
     }
 }
