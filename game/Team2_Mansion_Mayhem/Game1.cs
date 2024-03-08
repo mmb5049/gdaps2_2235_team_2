@@ -20,7 +20,7 @@ namespace Team2_Mansion_Mayhem
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private bool debugEnabled;
-
+        
         //control states
         private GameState currentState;
         private KeyboardState kbState;
@@ -85,7 +85,15 @@ namespace Team2_Mansion_Mayhem
                     }
                     break;
                 case GameState.Game:
-                    // in game update logic
+                    // in game update logic to be added
+
+                    /* temporary way to move from Game to GameOver 
+                     * if we need to check that state for anything
+                    */
+                    if (preKbState.IsKeyUp(Keys.Space) && kbState.IsKeyDown(Keys.Space))
+                    {
+                        currentState = GameState.GameOver;
+                    }
                     break;
                 case GameState.GameOver:
                     // sends player back to main menu when they press Space on the GameOver screen
@@ -113,6 +121,8 @@ namespace Team2_Mansion_Mayhem
             {
                 _spriteBatch.DrawString(debugFont, $"GameState: {currentState}", new Vector2(5, windowHeight - 18), Color.Black);
             }
+            
+            
 
             base.Draw(gameTime);
 
