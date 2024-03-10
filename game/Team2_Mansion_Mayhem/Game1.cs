@@ -60,7 +60,6 @@ namespace Team2_Mansion_Mayhem
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            currentState = GameState.Game;
             base.Initialize();
         }
 
@@ -75,7 +74,7 @@ namespace Team2_Mansion_Mayhem
             playerLoc = new Vector2(50f, 50f);
             playerSprite = Content.Load<Texture2D>("Sprites/playerSpriteSheet");
 
-            player = new Player(playerSprite, playerLoc, playerState.WalkRight);
+            player = new Player(playerSprite, playerLoc, playerState.WalkRight, kbState);
         }
 
         protected override void Update(GameTime gameTime)
@@ -101,7 +100,7 @@ namespace Team2_Mansion_Mayhem
                     break;
                 case GameState.Game:
                     // in game update logic to be added
-
+                    player.Update(gameTime);
                     /* temporary way to move from Game to GameOver 
                      * if we need to check that state for anything
                     */
