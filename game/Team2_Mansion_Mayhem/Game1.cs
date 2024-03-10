@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Transactions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -59,7 +60,7 @@ namespace Team2_Mansion_Mayhem
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            currentState = GameState.Game;
             base.Initialize();
         }
 
@@ -72,7 +73,7 @@ namespace Team2_Mansion_Mayhem
 
             // create player
             playerLoc = new Vector2(50f, 50f);
-            playerSprite = Content.Load<Texture2D>("playerSpriteSheet");
+            playerSprite = Content.Load<Texture2D>("Sprites/playerSpriteSheet");
 
             player = new Player(playerSprite, playerLoc, playerState.WalkRight);
         }
@@ -106,6 +107,7 @@ namespace Team2_Mansion_Mayhem
                     */
                     if (preKbState.IsKeyUp(Keys.Space) && kbState.IsKeyDown(Keys.Space))
                     {
+                        
                         currentState = GameState.GameOver;
                     }
                     break;
@@ -119,6 +121,7 @@ namespace Team2_Mansion_Mayhem
                 default:
                     break;
             }
+            player.UpdateAnimation(gameTime);
             preKbState = kbState;
 
             base.Update(gameTime);

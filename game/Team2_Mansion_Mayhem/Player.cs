@@ -28,9 +28,10 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private double timeCounter;     // The amount of time that has passed
         private double fps;             // The speed of the animation
         private double timePerFrame;    // The amount of time (in fractional seconds) per frame
-        private int WalkFrameCount = 9;
+
+        private int WalkFrameCount = 8;
         private int offSetY;
-        private const int recWidth = 26;
+        private const int recWidth = 64;
         private const int recHeight = 53;
 
         // Constructor
@@ -51,12 +52,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         }
         public void Draw(SpriteBatch sb)
         {
-            switch (state)
-            {
-                case playerState.WalkRight:
-                    DrawWalking(sb, SpriteEffects.None);
-                    break;
-            }
+            DrawWalking(sb, SpriteEffects.None);
         }
         public void UpdateAnimation(GameTime gameTime)
         {
@@ -87,14 +83,14 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 spriteSheet,
                 location,
                 new Rectangle(
-                    frame * recWidth,
+                    (frame * recWidth),
                     offSetY,
                     recWidth,
                     recHeight),
                 Color.White,
                 0,
                 Vector2.Zero,
-                new Vector2(0,0),
+                1.0f,
                 flipSprite,
                 0);
         }
