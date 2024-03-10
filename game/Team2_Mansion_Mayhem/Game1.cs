@@ -4,6 +4,7 @@ using System.Transactions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Team2_Mansion_Mayhem.Content.Sprites;
 
 namespace Team2_Mansion_Mayhem
 {
@@ -35,6 +36,11 @@ namespace Team2_Mansion_Mayhem
         private int windowHeight;
         private int windowWidth;
 
+
+        // player
+        private Player player;
+        private Vector2 playerLoc;
+        private Texture2D playerSprite;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -46,6 +52,8 @@ namespace Team2_Mansion_Mayhem
 
             windowHeight = _graphics.PreferredBackBufferHeight;
             windowWidth = _graphics.PreferredBackBufferWidth;
+
+
         }
 
         protected override void Initialize()
@@ -61,6 +69,12 @@ namespace Team2_Mansion_Mayhem
 
             // TODO: use this.Content to load your game content here
             debugFont = Content.Load<SpriteFont>("Fonts/Debugfont");
+
+            // create player
+            playerLoc = new Vector2(50f, 50f);
+            playerSprite = Content.Load<Texture2D>("playerSpriteSheet");
+
+            player = new Player(playerSprite, playerLoc, playerState.WalkRight);
         }
 
         protected override void Update(GameTime gameTime)
@@ -121,8 +135,19 @@ namespace Team2_Mansion_Mayhem
             {
                 _spriteBatch.DrawString(debugFont, $"GameState: {currentState}", new Vector2(5, windowHeight - 18), Color.Black);
             }
-            
-            
+
+            switch (currentState)
+            {
+                case GameState.MainMenu:
+                    break;
+
+                case GameState.Game:
+                    player.Draw(_spriteBatch);
+                    break;
+
+                case GameState.GameOver:
+                    break;
+            }
 
             base.Draw(gameTime);
 
