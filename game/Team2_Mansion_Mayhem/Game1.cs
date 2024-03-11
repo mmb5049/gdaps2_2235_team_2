@@ -120,7 +120,6 @@ namespace Team2_Mansion_Mayhem
                 default:
                     break;
             }
-            player.UpdateAnimation(gameTime);
             preKbState = kbState;
 
             base.Update(gameTime);
@@ -145,6 +144,12 @@ namespace Team2_Mansion_Mayhem
 
                 case GameState.Game:
                     player.Draw(_spriteBatch);
+
+                    _spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
+                        new Vector2(10, 10), Color.White);
+                    _spriteBatch.DrawString
+                        (debugFont, string.Format("Timer: {0} \nShoot timer:{1}", player.Timer, player.ShootTimer),
+                        new Vector2(10, 30), Color.White);
                     break;
 
                 case GameState.GameOver:
