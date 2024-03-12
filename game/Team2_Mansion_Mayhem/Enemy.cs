@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
@@ -13,7 +14,7 @@ namespace Team2_Mansion_Mayhem
     {
         // fields
         protected Texture2D texture;
-        protected Vector2 position;
+        protected Rectangle position;
         protected int health;
         protected int maxHealth;
         protected int defense;
@@ -22,7 +23,7 @@ namespace Team2_Mansion_Mayhem
         protected bool alive = true;
 
         // constructor
-        public Enemy(Vector2 position, int health, int damage, int speed)
+        public Enemy(Rectangle position, int health, int damage, int speed)
         {
             this.position = position;
             this.maxHealth = health;
@@ -48,17 +49,21 @@ namespace Team2_Mansion_Mayhem
         {
             get { return alive; }
         }
-        public float X
+        public int X
         {
             get { return this.position.X; }
             set { this.position.X = value; }
         }
-        public float Y
+        public int Y
         {
             get { return this.position.Y; }
             set { this.position.Y = value; }
         }
 
+        public Rectangle Position
+        {
+            get { return position; }
+        }
         public virtual string DebugStats
         {
             //return a list of stats to be printed 
@@ -87,11 +92,12 @@ namespace Team2_Mansion_Mayhem
 
         public virtual void Chase(Vector2 playerPosition)
         {
-            // Calculate direction towards the player
-            Vector2 direction = Vector2.Normalize(playerPosition - position);
+            // find direction
+            Vector2 direction = new Vector2(playerPosition.X - position.X, playerPosition.Y - position.Y);
 
             // Update enemy position
-            position += direction * speed;
+            position.X += (int)direction.X * speed;
+            position.Y += (int)direction.Y * speed;
         }
 
         public virtual void Draw(SpriteBatch sb)

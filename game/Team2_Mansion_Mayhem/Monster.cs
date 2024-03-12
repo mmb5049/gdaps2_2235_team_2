@@ -20,7 +20,7 @@ namespace Team2_Mansion_Mayhem
         private double rageThreshold;
         private int ragePower;
 
-        public Monster(Vector2 position, int health, int damage, int speed) :base(position,health,damage,speed)
+        public Monster(Rectangle position, int health, int damage, int speed) :base(position,health,damage,speed)
         {
             this.position = position;
             this.maxHealth = health;

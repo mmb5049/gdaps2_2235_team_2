@@ -20,8 +20,8 @@ namespace Team2_Mansion_Mayhem
     {
         // field
         private Texture2D projectileSheet;
-        private Vector2 location;
-        private float speed = 3;
+        private Rectangle location;
+        private int speed = 3;
         private bool isActive;
         private projectileState state;
         private int windowWidth;
@@ -39,7 +39,7 @@ namespace Team2_Mansion_Mayhem
 
 
         // constructor
-        public Projectile(Texture2D projectileSheet, Vector2 location, projectileState state, int windowWidth, int windowHeight)
+        public Projectile(Texture2D projectileSheet, Rectangle location, projectileState state, int windowWidth, int windowHeight)
         {
             this.projectileSheet = projectileSheet;
             this.location = location;
@@ -125,7 +125,7 @@ namespace Team2_Mansion_Mayhem
             frameCount = 3;
             sb.Draw(
                 projectileSheet,
-                location,
+                new Vector2((float)location.X,(float)location.Y),
                 new Rectangle(
                     5 + (frame * recWidth),
                     offSetY,
@@ -138,5 +138,12 @@ namespace Team2_Mansion_Mayhem
                 flipSprite,
                 0);
         }
+
+        /*public bool CheckCollision(Enemy enemy)
+        {
+            if (location.Intersects(enemy.Position)) { 
+            }
+        }*/
+
     }
 }

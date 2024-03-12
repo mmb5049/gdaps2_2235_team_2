@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Numerics;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+
 
 namespace Team2_Mansion_Mayhem
 {
     /* a subclass of Enemy, a low level enemy 
-     * whose main feature is the ability 
-     * to pass through obstacles
-     */
-    internal class Ghost: Enemy
+   * whose main feature is the ability 
+   * to pass through obstacles
+   */
+    internal class Ghost : Enemy
     {
-        
-        public Ghost(Vector2 position, int health, int damage, int speed):base(position, health, damage, speed)
+
+        public Ghost(Rectangle position, int health, int damage, int speed) : base(position, health, damage, speed)
         {
             this.position = position;
             this.maxHealth = health;
@@ -35,6 +37,5 @@ namespace Team2_Mansion_Mayhem
             // will update when we have the player class
             return 0;
         }
-        
     }
 }

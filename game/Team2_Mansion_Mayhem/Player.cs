@@ -25,18 +25,18 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
     {
         // fields
         private Texture2D spriteSheet;
-        private Vector2 location;
+        private Rectangle location;
         private playerState state;
         private KeyboardState kbState;
         private KeyboardState preKbState;
-        private float speed = 2.0f;
+        private int speed = 2;
         private int windowWidth;
         private int windowHeight;
         private List <Projectile> projectiles = new List<Projectile>();
 
         // projectile
         private Texture2D projectileSheet;
-        private Vector2 projectileLoc;
+        private Rectangle projectileLoc;
 
 
 
@@ -57,7 +57,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private double shootTimer; 
 
         // Constructor
-        public Player(Texture2D spriteSheet, Vector2 location, playerState state, KeyboardState kbState,
+        public Player(Texture2D spriteSheet, Rectangle location, playerState state, KeyboardState kbState,
             Texture2D projectileSheet, int windowWidth, int windowHeight)
         {
             this.spriteSheet = spriteSheet;
@@ -76,12 +76,12 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             get { return state; }
             set { state = value; }
         }
-        public float X
+        public int X
         {
             get { return location.X; }
             set { location.X = value; }
         }
-        public float Y
+        public int Y
         {
             get { return location.Y; }
             set { location.Y = value; }
@@ -242,7 +242,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             frameCount = 8;
             sb.Draw(
                 spriteSheet,
-                location,
+                new Vector2((float)location.X,(float)location.Y),
                 new Rectangle(
                     (frame * recWidth),
                     offSetY,
@@ -261,7 +261,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             offSetY = 714;
             sb.Draw(
                 spriteSheet,
-                location,
+                new Vector2((float)location.X, (float)location.Y),
                 new Rectangle(
                     0,
                     offSetY,
@@ -280,7 +280,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             frameCount = 7;
             sb.Draw(
                 spriteSheet,
-                location,
+                new Vector2((float)location.X, (float)location.Y),
                 new Rectangle(
                     (shootFrame * recWidth),
                     offSetY,
@@ -395,7 +395,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             if (Math.Abs(timer - 0.67) < 0.01 )
             {
                 // spawn a projectile
-                projectileLoc = new Vector2(location.X + recWidth, location.Y + (recHeight / 2));
+                projectileLoc = new Rectangle((int)(location.X + recWidth), (int)(location.Y + (recHeight / 2)), 20,18);
 
                 Projectile projectile = new Projectile
                     (projectileSheet, projectileLoc, projectileState.FaceRight, windowWidth, windowHeight);
@@ -419,7 +419,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             if (Math.Abs(timer - 0.67) < 0.01)
             {
                 // spawn a projectile
-                projectileLoc = new Vector2(location.X - 10, location.Y + (recHeight / 2));
+                projectileLoc = new Rectangle((int)location.X - 10, (int)location.Y + (recHeight / 2), 20, 18);
 
                 Projectile projectile = new Projectile
                     (projectileSheet, projectileLoc, projectileState.FaceLeft, windowWidth, windowHeight);

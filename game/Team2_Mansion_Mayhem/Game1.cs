@@ -41,7 +41,7 @@ namespace Team2_Mansion_Mayhem
 
         // player
         private Player player;
-        private Vector2 playerLoc;
+        private Rectangle playerLoc;
         private Texture2D playerSprite;
 
         // projectile
@@ -77,14 +77,13 @@ namespace Team2_Mansion_Mayhem
             debugFont = Content.Load<SpriteFont>("Fonts/Debugfont");
 
             // create player
-            playerLoc = new Vector2(50f, 50f);
+            playerLoc = new Rectangle(50, 50, 64, 53);
             playerSprite = Content.Load<Texture2D>("Sprites/playerSpriteSheet");
 
             
 
             projectileLoc = new Vector2(200f, 200f);
             projectileSprite = Content.Load<Texture2D>("Sprites/projectileSpriteSheet");
-            projectile = new Projectile(projectileSprite, projectileLoc, projectileState.FaceRight, windowWidth, windowHeight);
             player = new Player(playerSprite, playerLoc, playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
         }
 
