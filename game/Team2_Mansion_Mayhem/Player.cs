@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
@@ -19,14 +20,24 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         ShootingLeft,
         ShootingRight,
     }
-    
+
     internal class Player
     {
+        // fields
         private Texture2D spriteSheet;
         private Vector2 location;
         private playerState state;
         private KeyboardState kbState;
         private KeyboardState preKbState;
+        private float speed = 2.0f;
+        private int windowWidth;
+        private int windowHeight;
+        private List <Projectile> projectiles = new List<Projectile>();
+
+        // projectile
+        private Texture2D projectileSheet;
+        private Vector2 projectileLoc;
+
 
 
         // Animation
@@ -44,8 +55,10 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         // timing
         private double timer = 0;
         private double shootTimer; 
+
         // Constructor
-        public Player(Texture2D spriteSheet, Vector2 location, playerState state, KeyboardState kbState)
+        public Player(Texture2D spriteSheet, Vector2 location, playerState state, KeyboardState kbState,
+            Texture2D projectileSheet, int windowWidth, int windowHeight)
         {
             this.spriteSheet = spriteSheet;
             this.location = location;
@@ -53,6 +66,9 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             this.kbState = kbState;
             fps = 10.0;
             timePerFrame = 1.0 / fps;
+            this.projectileSheet = projectileSheet;
+            this.windowWidth = windowWidth;
+            this.windowHeight = windowHeight;
         }
         // Properties
         public playerState State
@@ -81,7 +97,10 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             get { return shootTimer; }
             set { shootTimer = value; } 
         }
-
+        public int Count
+        {
+            get { return projectiles.Count; }
+        }
         // method
         public void Update(GameTime gameTime)
         {
@@ -89,6 +108,26 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             shootTimer = .7;
             UpdateAnimation(gameTime);
             
+            if (projectiles != null) // update each projectile
+            {
+                foreach (Projectile projectile in projectiles)
+                {
+                    projectile.Update(gameTime);
+                }
+            }
+
+            if (projectiles.Count > 0)
+            {
+                for (int i = projectiles.Count - 1; i >= 0; i--) // remove projectiles when not active
+                {
+                    if (projectiles[i].IsActive != true)
+                    {
+                        projectiles.RemoveAt(i);
+                    }
+                }
+            }
+            
+
             switch (state)
             {
                 case playerState.FaceLeft:
@@ -186,6 +225,15 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                     DrawShooting(sb, SpriteEffects .FlipHorizontally);
                     break;
             }
+
+            if (projectiles != null)
+            {
+                foreach (Projectile projectile in projectiles)
+                {
+                    projectile.Draw(sb);
+                }
+            }
+            
         }
         private void DrawWalking(SpriteBatch sb, SpriteEffects flipSprite)
         {
@@ -298,18 +346,18 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
 
             if (keyState.IsKeyDown(Keys.D))
             {
-                location.X += 2;
+                location.X += speed;
             }
 
             
             if (keyState.IsKeyDown(Keys.S))
             {
-                location.Y += 2;
+                location.Y += speed;
             }
 
             if (keyState.IsKeyDown(Keys.W))
             {
-                location.Y -= 2;
+                location.Y -= speed;
             }
         }
 
@@ -323,23 +371,37 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 state = playerState.FaceLeft;
             }
 
+            // move around
             if (keyState.IsKeyDown(Keys.S))
             {
-                location.Y += 2;
+                location.Y += speed;
             }
             if (keyState.IsKeyDown(Keys.A))
             {
-                location.X -= 2;
+                location.X -= speed;
             }
             if (keyState.IsKeyDown(Keys.W))
             {
-                location.Y -= 2;
+                location.Y -= speed;
             }
         }
 
         private void ProcessShootRight(KeyboardState keyState, GameTime gameTime, double shootTimer)
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
+
+            // Check if timer is within a small range around 0.67
+            // Cannot use == because the timing is so fast to register
+            if (Math.Abs(timer - 0.67) < 0.01 )
+            {
+                // spawn a projectile
+                projectileLoc = new Vector2(location.X + recWidth, location.Y + (recHeight / 2));
+
+                Projectile projectile = new Projectile
+                    (projectileSheet, projectileLoc, projectileState.FaceRight, windowWidth, windowHeight);
+                projectiles.Add(projectile);
+            }
+
             if (timer >= shootTimer)
             {
                 state = playerState.FaceRight;
@@ -351,6 +413,19 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private void ProcessShootLeft(KeyboardState keyState, GameTime gameTime, double shootTimer)
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
+
+            // Check if timer is within a small range around 0.67
+            // Cannot use == because the timing is so fast to register
+            if (Math.Abs(timer - 0.67) < 0.01)
+            {
+                // spawn a projectile
+                projectileLoc = new Vector2(location.X - 10, location.Y + (recHeight / 2));
+
+                Projectile projectile = new Projectile
+                    (projectileSheet, projectileLoc, projectileState.FaceLeft, windowWidth, windowHeight);
+                projectiles.Add(projectile);
+            }
+
             if (timer >= shootTimer)
             {
                 state = playerState.FaceLeft;

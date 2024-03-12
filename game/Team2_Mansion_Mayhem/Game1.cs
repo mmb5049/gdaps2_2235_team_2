@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Transactions;
 using Microsoft.Xna.Framework;
@@ -42,6 +43,11 @@ namespace Team2_Mansion_Mayhem
         private Player player;
         private Vector2 playerLoc;
         private Texture2D playerSprite;
+
+        // projectile
+        private Texture2D projectileSprite;
+        private Vector2 projectileLoc;
+        private Projectile projectile;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -74,7 +80,12 @@ namespace Team2_Mansion_Mayhem
             playerLoc = new Vector2(50f, 50f);
             playerSprite = Content.Load<Texture2D>("Sprites/playerSpriteSheet");
 
-            player = new Player(playerSprite, playerLoc, playerState.WalkRight, kbState);
+            
+
+            projectileLoc = new Vector2(200f, 200f);
+            projectileSprite = Content.Load<Texture2D>("Sprites/projectileSpriteSheet");
+            projectile = new Projectile(projectileSprite, projectileLoc, projectileState.FaceRight, windowWidth, windowHeight);
+            player = new Player(playerSprite, playerLoc, playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
         }
 
         protected override void Update(GameTime gameTime)
@@ -101,6 +112,7 @@ namespace Team2_Mansion_Mayhem
                 case GameState.Game:
                     // in game update logic to be added
                     player.Update(gameTime);
+
                     /* temporary way to move from Game to GameOver 
                      * if we need to check that state for anything
                     */
@@ -148,8 +160,10 @@ namespace Team2_Mansion_Mayhem
                     _spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
                         new Vector2(10, 10), Color.White);
                     _spriteBatch.DrawString
-                        (debugFont, string.Format("Timer: {0} \nShoot timer:{1}", player.Timer, player.ShootTimer),
+                        (debugFont, string.Format("Timer: {0} \nShoot timer:{1}" +
+                        "\nProjectiles count: {2}", player.Timer, player.ShootTimer, player.Count),
                         new Vector2(10, 30), Color.White);
+
                     break;
 
                 case GameState.GameOver:
