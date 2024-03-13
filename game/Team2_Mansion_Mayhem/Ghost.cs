@@ -18,7 +18,8 @@ namespace Team2_Mansion_Mayhem
     internal class Ghost : Enemy
     {
 
-        public Ghost(Rectangle position, int health, int damage, int speed) : base(position, health, damage, speed)
+        public Ghost(Texture2D texture, Rectangle position, int health, int damage, int speed) 
+            :base(texture,position, health, damage, speed)
         {
             this.position = position;
             this.maxHealth = health;
@@ -27,7 +28,7 @@ namespace Team2_Mansion_Mayhem
             this.speed = speed;
         }
 
-        public override void Update()
+        public override void Update(GameTime gameTime)
         {
             // should move through walls without any updates
         }

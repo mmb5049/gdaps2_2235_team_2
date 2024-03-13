@@ -48,6 +48,14 @@ namespace Team2_Mansion_Mayhem
         private Texture2D projectileSprite;
         private Vector2 projectileLoc;
         private Projectile projectile;
+
+        // monster
+        private Monster monster;
+        private Rectangle monsterLoc;
+        private Texture2D monsterSprite;
+        private int monsterHealth;
+        private int monsterDamage;
+        private int monsterSpeed;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -59,13 +67,14 @@ namespace Team2_Mansion_Mayhem
 
             windowHeight = _graphics.PreferredBackBufferHeight;
             windowWidth = _graphics.PreferredBackBufferWidth;
-
-
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            monsterSpeed = 3;
+            monsterHealth = 150;
+            monsterDamage = 10;
             base.Initialize();
         }
 
@@ -76,14 +85,16 @@ namespace Team2_Mansion_Mayhem
             // TODO: use this.Content to load your game content here
             debugFont = Content.Load<SpriteFont>("Fonts/Debugfont");
 
-            // create player
+            // load sprite
             playerLoc = new Rectangle(50, 50, 64, 53);
             playerSprite = Content.Load<Texture2D>("Sprites/playerSpriteSheet");
 
-            
-
-            projectileLoc = new Vector2(200f, 200f);
             projectileSprite = Content.Load<Texture2D>("Sprites/projectileSpriteSheet");
+
+            monsterLoc = new Rectangle (200, 200, 64, 53);
+            monsterSprite = Content.Load<Texture2D>("Sprites/monsterSpriteSheet");
+
+            monster = new Monster(monsterSprite,monsterLoc, monsterHealth, monsterDamage, monsterSpeed, monsterState.WalkRight);
             player = new Player(playerSprite, playerLoc, playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
         }
 
@@ -112,6 +123,8 @@ namespace Team2_Mansion_Mayhem
                     // in game update logic to be added
                     player.Update(gameTime);
 
+                    monster.Update(gameTime);
+                    monster.Chase(player.Location);
                     /* temporary way to move from Game to GameOver 
                      * if we need to check that state for anything
                     */
@@ -155,7 +168,7 @@ namespace Team2_Mansion_Mayhem
 
                 case GameState.Game:
                     player.Draw(_spriteBatch);
-
+                    monster.Draw(_spriteBatch);
                     _spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
                         new Vector2(10, 10), Color.White);
                     _spriteBatch.DrawString

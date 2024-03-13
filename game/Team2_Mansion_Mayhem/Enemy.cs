@@ -23,7 +23,7 @@ namespace Team2_Mansion_Mayhem
         protected bool alive = true;
 
         // constructor
-        public Enemy(Rectangle position, int health, int damage, int speed)
+        public Enemy(Texture2D texture, Rectangle position, int health, int damage, int speed)
         {
             this.position = position;
             this.maxHealth = health;
@@ -77,7 +77,7 @@ namespace Team2_Mansion_Mayhem
             }
         }
         //method
-        public abstract void Update();
+        public abstract void Update(GameTime gameTime);
 
         public abstract int Attack();
         public virtual void DamageTaken(int damage)
@@ -90,14 +90,22 @@ namespace Team2_Mansion_Mayhem
             health -= damageTaken;
         }
 
-        public virtual void Chase(Vector2 playerPosition)
+        public virtual void Chase(Rectangle playerPosition)
         {
-            // find direction
-            Vector2 direction = new Vector2(playerPosition.X - position.X, playerPosition.Y - position.Y);
+            // Calculate direction towards the player
+            float deltaX = playerPosition.X - Position.X;
+            float deltaY = playerPosition.Y - Position.Y;
+            float distance = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+            float directionX = deltaX / distance;
+            float directionY = deltaY / distance;
 
             // Update enemy position
-            position.X += (int)direction.X * speed;
-            position.Y += (int)direction.Y * speed;
+            position = new Rectangle(
+                Position.X + (int)(directionX * speed),
+                Position.Y + (int)(directionY * speed),
+                Position.Width,
+                Position.Height);
+
         }
 
         public virtual void Draw(SpriteBatch sb)

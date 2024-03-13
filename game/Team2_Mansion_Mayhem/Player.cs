@@ -101,6 +101,11 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         {
             get { return projectiles.Count; }
         }
+
+        public Rectangle Location
+        {
+            get { return location; }
+        }
         // method
         public void Update(GameTime gameTime)
         {

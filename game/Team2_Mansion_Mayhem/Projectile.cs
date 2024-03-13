@@ -139,14 +139,12 @@ namespace Team2_Mansion_Mayhem
                 0);
         }
 
-        public bool CheckCollision(Enemy enemy) // check if projectile hit enemy
+        public void CheckCollision(Enemy enemy) // check if projectile hit enemy
         {
             if (location.Intersects(enemy.Position)) 
             {
                 isActive = false;
-                return true;
             }
-            return false;
         }
 
     }
