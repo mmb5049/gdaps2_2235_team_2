@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
@@ -23,7 +25,7 @@ namespace Team2_Mansion_Mayhem
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private bool debugEnabled;
-        
+
         //control states
         private GameState currentState;
         private KeyboardState kbState;
@@ -56,6 +58,18 @@ namespace Team2_Mansion_Mayhem
         private int monsterHealth;
         private int monsterDamage;
         private int monsterSpeed;
+        private int monsterDefense;
+        private string[] monsterData;
+
+        // monster
+        private Ghost ghost;
+        private Rectangle ghostLoc;
+        private Texture2D ghostSprite;
+        private int ghostHealth;
+        private int ghostDamage;
+        private int ghostSpeed;
+        private int ghostDefense;
+        private string[] ghostData;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -72,9 +86,39 @@ namespace Team2_Mansion_Mayhem
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            /*
             monsterSpeed = 3;
             monsterHealth = 150;
             monsterDamage = 10;
+            monsterDefense = 5;*/
+
+            monsterData = new string[5];
+            monsterData = LoadStats("Monster");
+            ghostData = new string[5];
+            ghostData = LoadStats("Ghost");
+            for (int i = 1;  i < 5; i++) 
+            {
+                if (i == 1)
+                {
+                    int.TryParse(monsterData[i], out monsterHealth);
+                    int.TryParse(ghostData[i], out ghostHealth);
+                }
+                if (i == 2)
+                {
+                    int.TryParse(monsterData[i], out monsterDefense);
+                    int.TryParse(ghostData[i], out ghostDefense);
+                }
+                if (i == 3)
+                {
+                    int.TryParse(monsterData[i], out monsterDamage);
+                    int.TryParse(ghostData[i], out ghostDamage);
+                }
+                if (i == 4)
+                {
+                    int.TryParse(monsterData[i], out monsterSpeed);
+                    int.TryParse(ghostData[i], out ghostSpeed);
+                }
+            }
             base.Initialize();
         }
 
@@ -86,7 +130,7 @@ namespace Team2_Mansion_Mayhem
             debugFont = Content.Load<SpriteFont>("Fonts/Debugfont");
 
             // load sprite
-            playerLoc = new Rectangle(50, 50, 64, 53);
+            playerLoc = new Rectangle(50, 50, 22, 49);
             playerSprite = Content.Load<Texture2D>("Sprites/playerSpriteSheet");
 
             projectileSprite = Content.Load<Texture2D>("Sprites/projectileSpriteSheet");
@@ -94,7 +138,7 @@ namespace Team2_Mansion_Mayhem
             monsterLoc = new Rectangle (200, 200, 64, 53);
             monsterSprite = Content.Load<Texture2D>("Sprites/monsterSpriteSheet");
 
-            monster = new Monster(monsterSprite,monsterLoc, monsterHealth, monsterDamage, monsterSpeed, monsterState.WalkRight);
+            monster = new Monster(monsterSprite,monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
             player = new Player(playerSprite, playerLoc, playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
         }
 
@@ -173,7 +217,10 @@ namespace Team2_Mansion_Mayhem
                         new Vector2(10, 10), Color.White);
                     _spriteBatch.DrawString
                         (debugFont, string.Format("Timer: {0} \nShoot timer:{1}" +
-                        "\nProjectiles count: {2}", player.Timer, player.ShootTimer, player.Count),
+                        "\nProjectiles count: {2}\nMonster position: {3},{4}" +
+                        "\nMonster Data: {5}, {6}, {7}, {8}", 
+                        player.Timer, player.ShootTimer, player.Count, monster.X, monster.Y, 
+                        monsterHealth, monsterDefense, monsterDamage, monsterSpeed),
                         new Vector2(10, 30), Color.White);
 
                     break;
@@ -185,6 +232,43 @@ namespace Team2_Mansion_Mayhem
             base.Draw(gameTime);
 
             _spriteBatch.End();
+        }
+
+        public string[] LoadStats(string type)
+        {
+            string[] data = new string[5];
+            string line = null;
+            StreamReader output = null;
+            string path = "..//..//..//stats.txt";
+            try
+            {
+                output = new StreamReader(path);
+                while ((line = output.ReadLine()) != null)
+                {
+                    if (line.Contains(","))
+                    {
+                        string[] splitData = line.Split(',');
+                        if (splitData[0].ToLower() == type.ToLower())
+                        {
+                            data = splitData;
+                        }
+                    }
+                }
+                return data;
+            }
+            catch (Exception e) 
+            {
+                // close the file
+                if (output != null)
+                {
+                    output.Close();
+                }
+            }
+            finally
+            {
+
+            }
+            return data;
         }
     }
 }

@@ -18,9 +18,10 @@ namespace Team2_Mansion_Mayhem
     internal class Ghost : Enemy
     {
 
-        public Ghost(Texture2D texture, Rectangle position, int health, int damage, int speed) 
-            :base(texture,position, health, damage, speed)
+        public Ghost(Texture2D texture, Rectangle position, int health, int defense, int damage, int speed) 
+            :base(texture,position, health, defense, damage, speed)
         {
+            this.texture = texture;
             this.position = position;
             this.maxHealth = health;
             this.health = health;

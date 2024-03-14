@@ -23,9 +23,11 @@ namespace Team2_Mansion_Mayhem
         protected bool alive = true;
 
         // constructor
-        public Enemy(Texture2D texture, Rectangle position, int health, int damage, int speed)
+        public Enemy(Texture2D texture, Rectangle position, int health, int defense, int damage, int speed)
         {
+            this.texture = texture;
             this.position = position;
+            this.defense = defense;
             this.maxHealth = health;
             this.health = health;
             this.damage = damage;
@@ -99,12 +101,18 @@ namespace Team2_Mansion_Mayhem
             float directionX = deltaX / distance;
             float directionY = deltaY / distance;
 
-            // Update enemy position
-            position = new Rectangle(
+            // Update enemy position if not colliding with player
+            Rectangle newPosition = new Rectangle(
                 Position.X + (int)(directionX * speed),
                 Position.Y + (int)(directionY * speed),
                 Position.Width,
                 Position.Height);
+
+            if (!newPosition.Intersects(playerPosition))
+            {
+                position = newPosition;
+            }
+
 
         }
 

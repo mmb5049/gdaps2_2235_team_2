@@ -39,8 +39,8 @@ namespace Team2_Mansion_Mayhem
         private const int recWidth = 64;
         private const int recHeight = 53;
 
-        public Monster(Texture2D texture, Rectangle position, int health, int damage, int speed, monsterState state) 
-            :base(texture, position,health,damage,speed)
+        public Monster(Texture2D texture, Rectangle position, int health, int defense,int damage, int speed, monsterState state) 
+            :base(texture, position,health, defense, damage, speed)
         {
             this.texture = texture;
             this.position = position;
@@ -53,6 +53,9 @@ namespace Team2_Mansion_Mayhem
             //same for all Monsters.. change me if needed!
             this.rageThreshold = 0.5;
             this.ragePower = 2;
+
+            fps = 10.0;
+            timePerFrame = 1.0 / fps;
         }
 
         public override void Update(GameTime gameTime)
