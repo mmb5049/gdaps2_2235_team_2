@@ -7,6 +7,7 @@ using static System.Net.Mime.MediaTypeNames;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Team2_Mansion_Mayhem
 {
@@ -57,6 +58,7 @@ namespace Team2_Mansion_Mayhem
             fps = 10.0;
             timePerFrame = 1.0 / fps;
         }
+        
 
         public override void Update(GameTime gameTime)
         {
@@ -68,15 +70,22 @@ namespace Team2_Mansion_Mayhem
                 speed *= ragePower;
                 enraged = true;
             }
+
+            Dead();
         }
         public override void Draw(SpriteBatch sb)
         {
-            if (alive)
+            if (alive == true)
             {
                 switch(state) 
                 {
                     case monsterState.WalkRight:
-                        DrawWalking(sb, SpriteEffects.None); break; 
+                        DrawWalking(sb, SpriteEffects.None); 
+                        break;
+
+                    case monsterState.WalkLeft:
+                        DrawWalking(sb, SpriteEffects.FlipHorizontally);
+                        break;
                 }
             }
         }
@@ -126,5 +135,18 @@ namespace Team2_Mansion_Mayhem
                 flipSprite,
                 0);
         }
+
+        public void ChangeState(GameTime gameTime, Rectangle playerLoc)
+        {
+            if (playerLoc.X > position.X)
+            {
+                state = monsterState.WalkRight;
+            }
+            else if (playerLoc.X < position.X)
+            {
+                state = monsterState.WalkLeft;
+            }
+        }
+
     }//end of class 
 }

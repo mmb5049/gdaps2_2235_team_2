@@ -45,6 +45,11 @@ namespace Team2_Mansion_Mayhem
         private Player player;
         private Rectangle playerLoc;
         private Texture2D playerSprite;
+        private int playerHealth;
+        private int playerDamage;
+        private int playerSpeed;
+        private int playerDefense;
+        private string[] playerData;
 
         // projectile
         private Texture2D projectileSprite;
@@ -70,6 +75,7 @@ namespace Team2_Mansion_Mayhem
         private int ghostSpeed;
         private int ghostDefense;
         private string[] ghostData;
+        private List<Monster> monsters;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -94,31 +100,40 @@ namespace Team2_Mansion_Mayhem
 
             monsterData = new string[5];
             monsterData = LoadStats("Monster");
+
             ghostData = new string[5];
             ghostData = LoadStats("Ghost");
+
+            playerData = new string[5];
+            playerData = LoadStats("Player");
             for (int i = 1;  i < 5; i++) 
             {
                 if (i == 1)
                 {
+                    int.TryParse(playerData[i], out playerHealth);
                     int.TryParse(monsterData[i], out monsterHealth);
                     int.TryParse(ghostData[i], out ghostHealth);
                 }
                 if (i == 2)
                 {
+                    int.TryParse(playerData[i], out playerDefense);
                     int.TryParse(monsterData[i], out monsterDefense);
                     int.TryParse(ghostData[i], out ghostDefense);
                 }
                 if (i == 3)
                 {
+                    int.TryParse(playerData[i], out playerDamage);
                     int.TryParse(monsterData[i], out monsterDamage);
                     int.TryParse(ghostData[i], out ghostDamage);
                 }
                 if (i == 4)
                 {
+                    int.TryParse(playerData[i], out playerSpeed);
                     int.TryParse(monsterData[i], out monsterSpeed);
                     int.TryParse(ghostData[i], out ghostSpeed);
                 }
             }
+            monsters = new List<Monster>();
             base.Initialize();
         }
 
@@ -139,7 +154,9 @@ namespace Team2_Mansion_Mayhem
             monsterSprite = Content.Load<Texture2D>("Sprites/monsterSpriteSheet");
 
             monster = new Monster(monsterSprite,monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
-            player = new Player(playerSprite, playerLoc, playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
+            player = new Player(playerSprite, playerLoc, playerHealth, playerDefense, playerDamage, playerSpeed,
+                playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
+            monsters.Add(monster);
         }
 
         protected override void Update(GameTime gameTime)
@@ -169,6 +186,15 @@ namespace Team2_Mansion_Mayhem
 
                     monster.Update(gameTime);
                     monster.Chase(player.Location);
+                    monster.ChangeState(gameTime,player.Location);
+
+                    foreach (Projectile projectile in player.Projectiles)
+                    {
+                        foreach (Monster monster in monsters)
+                        {
+                            projectile.CheckCollision(monster, player.Damage);
+                        }
+                    }
                     /* temporary way to move from Game to GameOver 
                      * if we need to check that state for anything
                     */
@@ -218,9 +244,9 @@ namespace Team2_Mansion_Mayhem
                     _spriteBatch.DrawString
                         (debugFont, string.Format("Timer: {0} \nShoot timer:{1}" +
                         "\nProjectiles count: {2}\nMonster position: {3},{4}" +
-                        "\nMonster Data: {5}, {6}, {7}, {8}", 
+                        "\nMonster Data: {5}, {6}, {7}, {8}, {9}", 
                         player.Timer, player.ShootTimer, player.Count, monster.X, monster.Y, 
-                        monsterHealth, monsterDefense, monsterDamage, monsterSpeed),
+                        monster.Health, monster.Defense, monster.Damage, monster.Speed, monster.Alive),
                         new Vector2(10, 30), Color.White);
 
                     break;

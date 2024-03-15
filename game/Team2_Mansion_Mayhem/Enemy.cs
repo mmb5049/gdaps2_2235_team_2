@@ -20,7 +20,7 @@ namespace Team2_Mansion_Mayhem
         protected int defense;
         protected int damage;
         protected int speed;
-        protected bool alive = true;
+        protected bool alive;
 
         // constructor
         public Enemy(Texture2D texture, Rectangle position, int health, int defense, int damage, int speed)
@@ -32,6 +32,7 @@ namespace Team2_Mansion_Mayhem
             this.health = health;
             this.damage = damage;
             this.speed = speed;
+            alive = true;
         }
 
         // properties
@@ -46,6 +47,10 @@ namespace Team2_Mansion_Mayhem
         public int Damage
         {
             get { return damage; }
+        }
+        public int Speed
+        {
+            get { return speed; }
         }
         public bool Alive
         {
@@ -112,10 +117,9 @@ namespace Team2_Mansion_Mayhem
             {
                 position = newPosition;
             }
-
-
         }
 
+        
         public virtual void Draw(SpriteBatch sb)
         {
             if (alive)
@@ -127,7 +131,7 @@ namespace Team2_Mansion_Mayhem
 
         public virtual void Dead()
         {
-            if(health <= 0)
+            if(health < 1)
             {
                 alive = false;
             }

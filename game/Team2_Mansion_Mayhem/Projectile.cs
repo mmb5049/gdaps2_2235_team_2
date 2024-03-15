@@ -61,6 +61,10 @@ namespace Team2_Mansion_Mayhem
             set { isActive = value; }
         }
 
+        public Rectangle Location
+        {
+            get { return location; }
+        }
         // method
         public void UpdateAnimation(GameTime gameTime)
         {
@@ -139,11 +143,12 @@ namespace Team2_Mansion_Mayhem
                 0);
         }
 
-        public void CheckCollision(Enemy enemy) // check if projectile hit enemy
+        public void CheckCollision(Enemy enemy, int damage) // check if projectile hit enemy
         {
             if (location.Intersects(enemy.Position)) 
             {
                 isActive = false;
+                enemy.DamageTaken(damage);
             }
         }
 

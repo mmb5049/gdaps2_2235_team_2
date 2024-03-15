@@ -29,10 +29,17 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private playerState state;
         private KeyboardState kbState;
         private KeyboardState preKbState;
-        private int speed = 2;
+        private int speed;
         private int windowWidth;
         private int windowHeight;
         private List <Projectile> projectiles = new List<Projectile>();
+
+        // stats
+        protected int health;
+        protected int maxHealth;
+        protected int defense;
+        protected int damage;
+        protected bool alive = true;
 
         // projectile
         private Texture2D projectileSheet;
@@ -57,9 +64,13 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private double shootTimer; 
 
         // Constructor
-        public Player(Texture2D spriteSheet, Rectangle location, playerState state, KeyboardState kbState,
-            Texture2D projectileSheet, int windowWidth, int windowHeight)
+        public Player(Texture2D spriteSheet, Rectangle location, int health, int defense, int damage, int speed 
+            ,playerState state, KeyboardState kbState, Texture2D projectileSheet, int windowWidth, int windowHeight)
         {
+            this.health = health;
+            this.defense = defense;
+            this.damage = damage;   
+            this.speed = speed;
             this.spriteSheet = spriteSheet;
             this.location = location;
             this.state = state;
@@ -105,6 +116,16 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         public Rectangle Location
         {
             get { return location; }
+        }
+        
+        public List<Projectile> Projectiles
+        {
+            get { return projectiles; }
+        }
+
+        public int Damage
+        {
+            get { return damage; }
         }
         // method
         public void Update(GameTime gameTime)
