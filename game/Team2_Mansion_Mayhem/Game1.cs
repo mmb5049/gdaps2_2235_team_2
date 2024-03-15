@@ -284,15 +284,15 @@ namespace Team2_Mansion_Mayhem
             }
             catch (Exception e) 
             {
+                
+            }
+            finally
+            {
                 // close the file
                 if (output != null)
                 {
                     output.Close();
                 }
-            }
-            finally
-            {
-
             }
             return data;
         }
