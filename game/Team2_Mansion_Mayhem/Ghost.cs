@@ -12,9 +12,10 @@ using Microsoft.Xna.Framework.Input;
 namespace Team2_Mansion_Mayhem
 {
     /* a subclass of Enemy, a low level enemy 
-   * whose main feature is the ability 
-   * to pass through obstacles
-   */
+    * whose main feature is the ability 
+    * to pass through obstacles
+    */
+
     internal class Ghost : Enemy
     {
 
@@ -31,12 +32,18 @@ namespace Team2_Mansion_Mayhem
 
         public override void Update(GameTime gameTime)
         {
-            // should move through walls without any updates
+            // Has no collision detection, update position directly
+
+            // Move horizontally freely
+            position.X += speed;
+
+            // Move vertically freely
+            position.Y += speed;
         }
 
         public override int Attack()
         {
-            // will update when we have the player class
+            // Update when we have the player class
             return 0;
         }
     }
