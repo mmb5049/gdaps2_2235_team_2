@@ -95,24 +95,25 @@ namespace Team2_Mansion_Mayhem
             // Update walking animation
             UpdateAnimation(gameTime, numberOfWalkingFrames);
 
-            // Move horizontally
-            X += Speed;
+            // Chase the player disregarding collision detections of obstacles
+            Chase();
 
-            // Move vertically
-            Y += Speed;
+            // When damage is taken, go to hurt state
 
+            // When health is 0 or less, go to dying state
             if (health <= 0)
             {
                 currentState = GhostState.Dying;
             }
-
-            // Chase the player disregarding collision detections of obstacles
         }
 
         private void UpdateHurtState(GameTime gameTime)
         {
             // Update hurt animation
             UpdateAnimation(gameTime, numberOfHurtFrames);
+
+            // Ghost becomes invulnerable and speed decreases after hurt animation
+            Chase();
 
             // Transition back to normal state after hurt animation is done
             if (currentFrame == numberOfHurtFrames - 1)
