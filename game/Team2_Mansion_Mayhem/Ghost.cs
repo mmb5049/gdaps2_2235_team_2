@@ -96,7 +96,7 @@ namespace Team2_Mansion_Mayhem
             UpdateAnimation(gameTime, numberOfWalkingFrames);
 
             // Chase the player disregarding collision detections of obstacles
-            Chase();
+            //Chase();
 
             // When damage is taken, go to hurt state
 
@@ -113,7 +113,7 @@ namespace Team2_Mansion_Mayhem
             UpdateAnimation(gameTime, numberOfHurtFrames);
 
             // Ghost becomes invulnerable and speed decreases after hurt animation
-            Chase();
+            //Chase();
 
             // Transition back to normal state after hurt animation is done
             if (currentFrame == numberOfHurtFrames - 1)

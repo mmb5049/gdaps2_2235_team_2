@@ -92,12 +92,8 @@ namespace Team2_Mansion_Mayhem
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            /*
-            monsterSpeed = 3;
-            monsterHealth = 150;
-            monsterDamage = 10;
-            monsterDefense = 5;*/
-
+            
+            // read and intialize data
             monsterData = new string[5];
             monsterData = LoadStats("Monster");
 
