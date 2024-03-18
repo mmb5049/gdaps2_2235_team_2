@@ -20,12 +20,19 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Debugfont.spritefont
 
-#begin Header.spritefont
+#begin Fonts/Header.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:Header.spritefont
+/build:Fonts/Header.spritefont
+
+#begin Fonts/normalFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/normalFont.spritefont
 
 #begin Sprites/ghostSpriteSheet.png
 /importer:TextureImporter

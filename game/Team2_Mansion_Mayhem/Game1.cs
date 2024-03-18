@@ -33,7 +33,8 @@ namespace Team2_Mansion_Mayhem
 
         //fonts
         private SpriteFont debugFont;
-
+        private SpriteFont headerFont;
+        private SpriteFont normalFont;
         //textures
 
         //misc
@@ -139,7 +140,8 @@ namespace Team2_Mansion_Mayhem
 
             // TODO: use this.Content to load your game content here
             debugFont = Content.Load<SpriteFont>("Fonts/Debugfont");
-
+            headerFont = Content.Load<SpriteFont>("Fonts/Header");
+            normalFont = Content.Load<SpriteFont>("Fonts/normalFont");
             // load sprite
             playerLoc = new Rectangle(50, 50, 22, 49);
             playerSprite = Content.Load<Texture2D>("Sprites/playerSpriteSheet");
@@ -217,7 +219,7 @@ namespace Team2_Mansion_Mayhem
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             _spriteBatch.Begin();
             // TODO: Add your drawing code here
@@ -230,6 +232,10 @@ namespace Team2_Mansion_Mayhem
             switch (currentState)
             {
                 case GameState.MainMenu:
+                    _spriteBatch.DrawString(headerFont, "Mansion Mayhem", new Vector2(275, 175), Color.Red);
+                    _spriteBatch.DrawString(normalFont, 
+                        "Instruction: \nMove: WASD \nShoot : J \nStartGame: Space",
+                        new Vector2(175, 250), Color.White);
                     break;
 
                 case GameState.Game:
