@@ -77,6 +77,11 @@ namespace Team2_Mansion_Mayhem
         private int ghostDefense;
         private string[] ghostData;
         private List<Monster> monsters;
+
+        // map
+        private Map map;
+        private Texture2D mapSprite;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -151,6 +156,9 @@ namespace Team2_Mansion_Mayhem
             monsterLoc = new Rectangle (200, 200, 64, 53);
             monsterSprite = Content.Load<Texture2D>("Sprites/monsterSpriteSheet");
 
+            mapSprite = Content.Load<Texture2D>("Sprites/mapSpriteSheet");
+
+            map = new Map(mapSprite, windowWidth, windowHeight);
             monster = new Monster(monsterSprite,monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
             player = new Player(playerSprite, playerLoc, playerHealth, playerDefense, playerDamage, playerSpeed,
                 playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
@@ -239,6 +247,7 @@ namespace Team2_Mansion_Mayhem
                     break;
 
                 case GameState.Game:
+                    map.Draw(_spriteBatch);
                     player.Draw(_spriteBatch);
                     monster.Draw(_spriteBatch);
                     _spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
@@ -254,6 +263,7 @@ namespace Team2_Mansion_Mayhem
                     break;
 
                 case GameState.GameOver:
+                    _spriteBatch.DrawString(headerFont, "GAME OVER", new Vector2(275, 175), Color.Red);
                     break;
             }
 
