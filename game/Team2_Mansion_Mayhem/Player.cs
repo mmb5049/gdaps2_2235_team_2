@@ -56,9 +56,9 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private int shootFrame;
         private int frameCount;
         private int offSetY;
-        private const int recWidth = 64;
-        private const int recHeight = 53;
-
+        private int recWidth = 64;
+        private int recHeight = 53;
+        private int xShift = 0;
         // timing
         private double timer = 0;
         private double shootTimer; 
@@ -244,10 +244,12 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                     break;
 
                 case playerState.ShootingRight:
+                    xShift = 64;
                     DrawShooting(sb, SpriteEffects.None);
                     break;
 
                 case playerState.ShootingLeft:
+                    xShift = -64;
                     DrawShooting(sb, SpriteEffects .FlipHorizontally);
                     break;
             }
@@ -264,6 +266,8 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private void DrawWalking(SpriteBatch sb, SpriteEffects flipSprite)
         {
             // draw walking animation
+            recWidth = 64;
+            recHeight = 53;
             offSetY = 714;
             frameCount = 8;
             sb.Draw(
@@ -284,6 +288,8 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private void DrawStanding(SpriteBatch sb, SpriteEffects flipSprite)
         {
             // draw standing sprite
+            recWidth = 64;
+            recHeight = 53;
             offSetY = 714;
             sb.Draw(
                 spriteSheet,
@@ -302,13 +308,16 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         }
         private void DrawShooting(SpriteBatch sb, SpriteEffects flipSprite)
         {
-            offSetY = 458;
+            recWidth = 192;
+            recHeight = 53;
+            offSetY = 1994;
+            
             frameCount = 7;
             sb.Draw(
                 spriteSheet,
                 new Vector2((float)location.X, (float)location.Y),
                 new Rectangle(
-                    (shootFrame * recWidth),
+                    (shootFrame * recWidth) + xShift,
                     offSetY,
                     recWidth,
                     recHeight),
@@ -318,6 +327,8 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 1.0f,
                 flipSprite,
                 0);
+
+
         }
 
         private void ProcessFaceLeft(KeyboardState keyState) // when player face left
@@ -421,7 +432,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             if (Math.Abs(timer - 0.67) < 0.01 )
             {
                 // spawn a projectile
-                projectileLoc = new Rectangle((int)(location.X + recWidth), (int)(location.Y + (recHeight / 2)), 20,18);
+                projectileLoc = new Rectangle((int)(location.X + 64), (int)(location.Y + (recHeight / 2)), 20,18);
 
                 Projectile projectile = new Projectile
                     (projectileSheet, projectileLoc, projectileState.FaceRight, windowWidth, windowHeight);

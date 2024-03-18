@@ -144,7 +144,7 @@ namespace Team2_Mansion_Mayhem
             normalFont = Content.Load<SpriteFont>("Fonts/normalFont");
             // load sprite
             playerLoc = new Rectangle(50, 50, 22, 49);
-            playerSprite = Content.Load<Texture2D>("Sprites/playerSpriteSheet");
+            playerSprite = Content.Load<Texture2D>("Sprites/newPlayerSpriteSheet");
 
             projectileSprite = Content.Load<Texture2D>("Sprites/projectileSpriteSheet");
 
