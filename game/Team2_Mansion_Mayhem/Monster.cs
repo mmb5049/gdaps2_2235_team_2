@@ -60,6 +60,7 @@ namespace Team2_Mansion_Mayhem
             this.speed = speed;
             this.enraged = false;
             this.state = state;
+            this.alive = true;
             //same for all Monsters.. change me if needed!
             this.rageThreshold = 0.5;
             this.ragePower = 2;
@@ -81,34 +82,38 @@ namespace Team2_Mansion_Mayhem
         //method
         public override void Update(GameTime gameTime, Player player)
         {
-            UpdateAnimation(gameTime);
-            attackTimer = 0.7;
-            //enrage logic.. if at rage threshold and not enraged yet..
-            if (((health/maxHealth) <= rageThreshold) && !enraged)
+            if (alive == true)
             {
-                damage *= ragePower;
-                speed *= ragePower;
-                enraged = true;
+                UpdateAnimation(gameTime);
+                attackTimer = 0.7;
+                //enrage logic.. if at rage threshold and not enraged yet..
+                if (((health / maxHealth) <= rageThreshold) && !enraged)
+                {
+                    damage *= ragePower;
+                    speed *= ragePower;
+                    enraged = true;
+                }
+                attackRange.X = position.X - 10;
+                attackRange.Y = position.Y - 10;
+                attackRange.Width = position.Width - 5;
+                attackRange.Height = position.Height - 5;
+
+                switch (state)
+                {
+                    case monsterState.AttackLeft:
+                        UpdateAttackAnimation(gameTime);
+                        ProcessAttackLeft(gameTime, attackTimer, player);
+                        break;
+
+                    case monsterState.AttackRight:
+                        UpdateAttackAnimation(gameTime);
+                        ProcessAttackRight(gameTime, attackTimer, player);
+                        break;
+                }
+
+                Dead();
             }
-            attackRange.X = position.X - 10;
-            attackRange.Y = position.Y - 10;
-            attackRange.Width = position.Width - 5 ;
-            attackRange.Height = position.Height - 5;
-
-            switch (state)
-            {
-                case monsterState.AttackLeft:
-                    UpdateAttackAnimation(gameTime);
-                    ProcessAttackLeft(gameTime, attackTimer, player);
-                    break;
-
-                case monsterState.AttackRight:
-                    UpdateAttackAnimation(gameTime);
-                    ProcessAttackRight(gameTime, attackTimer, player); 
-                    break;
-            }
-
-            Dead();
+           
         }
         public override void Draw(SpriteBatch sb)
         {

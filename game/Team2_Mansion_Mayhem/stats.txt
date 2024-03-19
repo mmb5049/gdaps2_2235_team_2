@@ -1,4 +1,4 @@
 Type,Health,Defense,Damage,Speed
 Player,100,10,20,4
-Monster,50,7,17,2
-Ghost,25,5,10,3
+Monster,50,7,7,1
+Ghost,25,5,3,3
