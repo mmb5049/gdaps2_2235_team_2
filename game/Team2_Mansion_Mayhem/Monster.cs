@@ -79,7 +79,7 @@ namespace Team2_Mansion_Mayhem
             get { return attackRange.Y; }
         }
         //method
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, Player player)
         {
             UpdateAnimation(gameTime);
             attackTimer = 0.7;
@@ -99,12 +99,12 @@ namespace Team2_Mansion_Mayhem
             {
                 case monsterState.AttackLeft:
                     UpdateAttackAnimation(gameTime);
-                    ProcessAttackLeft(gameTime, attackTimer);
+                    ProcessAttackLeft(gameTime, attackTimer, player);
                     break;
 
                 case monsterState.AttackRight:
                     UpdateAttackAnimation(gameTime);
-                    ProcessAttackRight(gameTime, attackTimer); 
+                    ProcessAttackRight(gameTime, attackTimer, player); 
                     break;
             }
 
@@ -141,41 +141,32 @@ namespace Team2_Mansion_Mayhem
         {
             if (state != monsterState.AttackLeft && state != monsterState.AttackRight) 
             {
-                // Calculate direction towards the player
-                float deltaX = playerPosition.X - Position.X;
-                float deltaY = playerPosition.Y - Position.Y;
-                float distance = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+                // Calculate direction towards the player by normalizing a vector
+                float deltaX = playerPosition.X - position.X;
+                float deltaY = playerPosition.Y - position.Y;
+                float distance = (float)Math.Sqrt(Math.Pow(deltaX,2) + Math.Pow(deltaY,2));
                 float directionX = deltaX / distance;
                 float directionY = deltaY / distance;
 
-                // Update enemy position if not colliding with player
-                /*Rectangle newPosition = new Rectangle(
-                    Position.X + (int)(directionX * speed),
-                    Position.Y + (int)(directionY * speed),
-                    Position.Width,
-                    Position.Height);
-
-                if (!newPosition.Intersects(playerPosition))
-                {
-                    position = newPosition;
-                }*/
+                
 
                 // Calculate the new position
-                int newX = (int)(Position.X + directionX * Speed);
-                int newY = (int)(Position.Y + directionY * Speed);
+                int newX = (int)(position.X + directionX * speed);
+                int newY = (int)(position.Y + directionY * speed);
 
                 // Check if the new position is within bounds
-                if (newX >= 0 && newX + Position.Width <= windowWidth &&
-                    newY >= 0 && newY + Position.Height <= windowHeight)
+                if (newX >= 0 && newX + position.Width <= windowWidth &&
+                    newY >= 0 && newY + position.Height <= windowHeight)
                 {
                     // Update enemy position
-                    position = new Rectangle(newX, newY, Position.Width, Position.Height);
+                    position = new Rectangle(newX, newY, position.Width, position.Height);
                 }
             }
         }
         public override int Attack()
         {
             //update me with like.. actual code later!
+            // no need to use this yet
             return 0;
         }
 
@@ -315,7 +306,7 @@ namespace Team2_Mansion_Mayhem
             }
         }
 
-        public void ProcessAttackRight(GameTime gameTime, double attackTimer)
+        public void ProcessAttackRight(GameTime gameTime, double attackTimer , Player player)
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -325,9 +316,18 @@ namespace Team2_Mansion_Mayhem
                 timer = 0;
                 attackFrame = 0;
             }
+
+            if (Math.Abs(timer - 0.3) > 0.3)
+            {
+                if (attackRange.Intersects(player.Location))
+                {
+                    player.DamageTaken(damage);
+                    player.IsHurt = true;
+                }
+            }
         }
 
-        public void ProcessAttackLeft(GameTime gameTime, double attackTimer)
+        public void ProcessAttackLeft(GameTime gameTime, double attackTimer, Player player)
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -336,6 +336,15 @@ namespace Team2_Mansion_Mayhem
                 state = monsterState.WalkLeft;
                 timer = 0;
                 attackFrame = 0;
+            }
+
+            if (Math.Abs(timer - 0.3) > 0.3)
+            {
+                if (attackRange.Intersects(player.Location))
+                {
+                    player.DamageTaken(damage);
+                    player.IsHurt = true;
+                }
             }
         }
 

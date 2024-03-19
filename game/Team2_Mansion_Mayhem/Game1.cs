@@ -190,7 +190,7 @@ namespace Team2_Mansion_Mayhem
                     // in game update logic to be added
                     player.Update(gameTime);
 
-                    monster.Update(gameTime);
+                    monster.Update(gameTime, player);
                     monster.Chase(player.Location, windowWidth, windowHeight);
                     monster.ChangeState(gameTime,player.Location);
                     monster.StartAttack(player.Location);
@@ -250,7 +250,8 @@ namespace Team2_Mansion_Mayhem
                     map.Draw(_spriteBatch);
                     player.Draw(_spriteBatch);
                     monster.Draw(_spriteBatch);
-                    _spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
+
+                    /*_spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
                         new Vector2(10, 10), Color.White);
                     _spriteBatch.DrawString
                         (debugFont, string.Format("Timer: {0} \nShoot timer:{1}" +
@@ -260,8 +261,10 @@ namespace Team2_Mansion_Mayhem
                         player.Timer, player.ShootTimer, player.Count, monster.X, monster.Y, 
                         monster.Health, monster.Defense, monster.Damage, monster.Speed, monster.Alive,
                         monster.attackRangeX, monster.attackRangeY),
-                        new Vector2(10, 30), Color.White);
+                        new Vector2(10, 30), Color.White);*/
 
+                    _spriteBatch.DrawString(normalFont, string.Format("Health: {0}", player.Health), 
+                        new Vector2(10,10), Color.White);
                     break;
 
                 case GameState.GameOver:

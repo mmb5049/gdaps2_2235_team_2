@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Team2_Mansion_Mayhem.Content.Sprites;
 
 namespace Team2_Mansion_Mayhem
 {
@@ -84,7 +85,7 @@ namespace Team2_Mansion_Mayhem
             }
         }
         //method
-        public abstract void Update(GameTime gameTime);
+        public abstract void Update(GameTime gameTime, Player player);
 
         public abstract int Attack();
         public virtual void DamageTaken(int damage)

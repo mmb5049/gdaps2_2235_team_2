@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Team2_Mansion_Mayhem.Content.Sprites;
 
 
 namespace Team2_Mansion_Mayhem
@@ -50,7 +51,7 @@ namespace Team2_Mansion_Mayhem
             currentState = GhostState.Normal;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, Player player)
         {
             // Update based on the current state
             switch (currentState)

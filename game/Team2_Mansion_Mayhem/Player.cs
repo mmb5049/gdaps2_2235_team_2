@@ -27,6 +27,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private Texture2D spriteSheet;
         private Rectangle location;
         private playerState state;
+        private bool isHurt;
         private KeyboardState kbState;
         private KeyboardState preKbState;
         private int speed;
@@ -40,7 +41,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         protected int defense;
         protected int damage;
         protected bool alive = true;
-
+        
         // projectile
         private Texture2D projectileSheet;
         private Rectangle projectileLoc;
@@ -59,11 +60,11 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private int recWidth = 64;
         private int recHeight = 53;
         private int xShift = 0;
-
+        private Color color;
         // timing
         private double timer = 0;
-        private double shootTimer; 
-
+        private double shootTimer;
+        private double hurtTimer = 0;
         // Constructor
         public Player(Texture2D spriteSheet, Rectangle location, int health, int defense, int damage, int speed 
             ,playerState state, KeyboardState kbState, Texture2D projectileSheet, int windowWidth, int windowHeight)
@@ -128,6 +129,18 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         {
             get { return damage; }
         }
+
+        public bool IsHurt
+        {
+            get { return isHurt; }
+            set { isHurt = value; }
+        }
+
+        public int Health
+        {
+            get { return health; }
+        }
+
         // method
         public void Update(GameTime gameTime)
         {
@@ -154,6 +167,10 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 }
             }
             
+            if (isHurt)
+            {
+                ProcessGetHurt(gameTime);
+            }
 
             switch (state)
             {
@@ -185,6 +202,16 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                     ProcessShootLeft(kbState, gameTime, shootTimer);
                     break;
             }
+        }
+
+        public virtual void DamageTaken(int damage)
+        {
+            int damageTaken = damage - defense;
+            if (damageTaken < 0) // avoid taking negative damage
+            {
+                damageTaken = 0;
+            }
+            health -= damageTaken;
         }
         public void UpdateAnimation(GameTime gameTime)
         {
@@ -271,6 +298,14 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             recHeight = 53;
             offSetY = 714;
             frameCount = 8;
+            if (isHurt != true)
+            {
+                color = Color.White;
+            }
+            else
+            {
+                color = Color.Red;
+            }
             sb.Draw(
                 spriteSheet,
                 new Vector2((float)location.X,(float)location.Y),
@@ -279,7 +314,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                     offSetY,
                     recWidth,
                     recHeight),
-                Color.White,
+                color,
                 0,
                 Vector2.Zero,
                 1.0f,
@@ -292,6 +327,14 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             recWidth = 64;
             recHeight = 53;
             offSetY = 714;
+            if (isHurt != true)
+            {
+                color = Color.White;
+            }
+            else
+            {
+                color = Color.Red;
+            }
             sb.Draw(
                 spriteSheet,
                 new Vector2((float)location.X, (float)location.Y),
@@ -300,7 +343,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                     offSetY,
                     recWidth,
                     recHeight),
-                Color.White,
+                color,
                 0,
                 Vector2.Zero,
                 1.0f,
@@ -312,8 +355,17 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             recWidth = 192;
             recHeight = 53;
             offSetY = 1994;
-            
             frameCount = 7;
+
+            if (isHurt != true)
+            {
+                color = Color.White;
+            }
+            else
+            {
+                color = Color.Red;
+            }
+
             sb.Draw(
                 spriteSheet,
                 new Vector2((float)location.X, (float)location.Y),
@@ -322,7 +374,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                     offSetY,
                     recWidth,
                     recHeight),
-                Color.White,
+                color,
                 0,
                 Vector2.Zero,
                 1.0f,
@@ -469,6 +521,17 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 state = playerState.FaceLeft;
                 timer = 0;
                 shootFrame = 0;
+            }
+        }
+
+        private void ProcessGetHurt (GameTime gameTime)
+        {
+            hurtTimer += gameTime.ElapsedGameTime.TotalSeconds;
+            
+            if (hurtTimer > 0.2)
+            {
+                isHurt = false;
+                hurtTimer = 0;
             }
         }
     }
