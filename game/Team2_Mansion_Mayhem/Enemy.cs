@@ -97,7 +97,7 @@ namespace Team2_Mansion_Mayhem
             health -= damageTaken;
         }
 
-        public virtual void Chase(Rectangle playerPosition)
+        public virtual void Chase(Rectangle playerPosition, int windowWidth, int windowHeight)
         {
             // Calculate direction towards the player
             float deltaX = playerPosition.X - Position.X;

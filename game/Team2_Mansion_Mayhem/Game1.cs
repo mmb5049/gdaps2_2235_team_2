@@ -191,9 +191,9 @@ namespace Team2_Mansion_Mayhem
                     player.Update(gameTime);
 
                     monster.Update(gameTime);
-                    monster.Chase(player.Location);
+                    monster.Chase(player.Location, windowWidth, windowHeight);
                     monster.ChangeState(gameTime,player.Location);
-
+                    monster.StartAttack(player.Location);
                     foreach (Projectile projectile in player.Projectiles)
                     {
                         foreach (Monster monster in monsters)
@@ -255,9 +255,11 @@ namespace Team2_Mansion_Mayhem
                     _spriteBatch.DrawString
                         (debugFont, string.Format("Timer: {0} \nShoot timer:{1}" +
                         "\nProjectiles count: {2}\nMonster position: {3},{4}" +
-                        "\nMonster Data: {5}, {6}, {7}, {8}, {9}", 
+                        "\nMonster Data: {5}, {6}, {7}, {8}, {9}" +
+                        "\nAttack Range: {10} {11}", 
                         player.Timer, player.ShootTimer, player.Count, monster.X, monster.Y, 
-                        monster.Health, monster.Defense, monster.Damage, monster.Speed, monster.Alive),
+                        monster.Health, monster.Defense, monster.Damage, monster.Speed, monster.Alive,
+                        monster.attackRangeX, monster.attackRangeY),
                         new Vector2(10, 30), Color.White);
 
                     break;

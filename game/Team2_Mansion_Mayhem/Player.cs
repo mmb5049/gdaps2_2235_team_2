@@ -59,6 +59,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private int recWidth = 64;
         private int recHeight = 53;
         private int xShift = 0;
+
         // timing
         private double timer = 0;
         private double shootTimer; 
