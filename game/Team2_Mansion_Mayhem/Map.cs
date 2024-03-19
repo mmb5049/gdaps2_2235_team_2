@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Team2_Mansion_Mayhem
 {
+    // the floor of the map
     internal class Map
     {
         // fields
@@ -36,6 +37,7 @@ namespace Team2_Mansion_Mayhem
         {
             int tilesRow = windowWidth / tileFrameX;
             int tilesCol = windowHeight / tileFrameY;
+            Wall walls = new Wall(spriteSheet, windowWidth, windowHeight);
             for(int i = 0; i < tilesRow; i++)
             {
                 for(int j = 0; j < tilesCol; j++)
@@ -53,6 +55,7 @@ namespace Team2_Mansion_Mayhem
                         
                 }
             }
+            walls.DrawTopWall(sb);
         }
     }
 }
