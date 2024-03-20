@@ -25,7 +25,7 @@ namespace Team2_Mansion_Mayhem
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private bool debugEnabled;
-
+        private Random rng = new Random();
         //control states
         private GameState currentState;
         private KeyboardState kbState;
@@ -37,7 +37,8 @@ namespace Team2_Mansion_Mayhem
         private SpriteFont normalFont;
 
         //levels
-        private int levels;
+        private int currentLevel;
+
         //misc
         private int windowHeight;
         private int windowWidth;
@@ -163,6 +164,7 @@ namespace Team2_Mansion_Mayhem
             monster = new Monster(monsterSprite,monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
             player = new Player(playerSprite, playerLoc, playerHealth, playerDefense, playerDamage, playerSpeed,
                 playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
+
             enemies.Add(monster);
         }
 
@@ -185,36 +187,49 @@ namespace Team2_Mansion_Mayhem
                     if(preKbState.IsKeyUp(Keys.Space) && kbState.IsKeyDown(Keys.Space))
                     {
                         currentState = GameState.Game;
+                        NextLevel();
                     }
                     break;
+
                 case GameState.Game:
                     // in game update logic to be added
                     player.Update(gameTime);
-
-                    /*foreach (Monster monster in enemies)
+                    
+                    if (enemies != null)
                     {
-                        monster.Update(gameTime, player);
-                        monster.Chase(player.Location, windowWidth, windowHeight);
-                        monster.ChangeState(gameTime, player.Location);
-                        monster.StartAttack(player.Location);
-                    }*/
-
-                    monster.Update(gameTime, player);
-                    monster.Chase(player.Location, windowWidth, windowHeight);
-                    monster.ChangeState(gameTime, player.Location);
-                    monster.StartAttack(player.Location);
-
-                    foreach (Projectile projectile in player.Projectiles)
-                    {
-                        foreach (Enemy enemy in enemies)
+                        foreach (Monster monster in enemies)
                         {
-                            projectile.CheckCollision(enemy, player.Damage);
+                            monster.Update(gameTime, player);
+                            monster.Chase(player.Location, windowWidth, windowHeight);
+                            monster.ChangeState(gameTime, player.Location);
+                            monster.StartAttack(player.Location);
                         }
+
+                        foreach (Projectile projectile in player.Projectiles)
+                        {
+                            foreach (Enemy enemy in enemies)
+                            {
+                                projectile.CheckCollision(enemy, player.Damage);
+                            }
+                        }
+                    }
+
+                    for (int i = enemies.Count - 1; i >= 0; i--) // iterate through the list backward
+                    {
+                        if (enemies[i].Alive == false)
+                        {
+                            enemies.RemoveAt(i);
+                        }
+                    }
+
+                    if (enemies.Count == 0)
+                    {
+                        NextLevel();
                     }
                     /* temporary way to move from Game to GameOver 
                      * if we need to check that state for anything
                     */
-                    if (preKbState.IsKeyUp(Keys.Space) && kbState.IsKeyDown(Keys.Space))
+                    if (player.Alive == false)
                     {
                         currentState = GameState.GameOver;
                     }
@@ -224,7 +239,9 @@ namespace Team2_Mansion_Mayhem
                     if (preKbState.IsKeyUp(Keys.Space) && kbState.IsKeyDown(Keys.Space))
                     {
                         currentState = GameState.MainMenu;
+                        ResetGame();
                     }
+                    ResetGame();
                     break;
                 default:
                     break;
@@ -258,21 +275,30 @@ namespace Team2_Mansion_Mayhem
                 case GameState.Game:
                     map.Draw(_spriteBatch);
                     player.Draw(_spriteBatch);
-                    monster.Draw(_spriteBatch);
+                    foreach(Monster monster in enemies)
+                    {
+                        monster.Draw(_spriteBatch);
+                    }
 
                     /*_spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
                         new Vector2(10, 10), Color.White);
                     _spriteBatch.DrawString
-                        (debugFont, string.Format("Timer: {0} \nShoot timer:{1}" +
-                        "\nProjectiles count: {2}\nMonster position: {3},{4}" +
+                        (debugFont, string.Format("Timer: {0} \nDamageTaken:{1}" +
+                        "\nDefense: {2}\nMonster position: {3},{4}" +
                         "\nMonster Data: {5}, {6}, {7}, {8}, {9}" +
                         "\nAttack Range: {10} {11}", 
-                        player.Timer, player.ShootTimer, player.Count, monster.X, monster.Y, 
+                        player.Timer, player.DamageIntake, player.Defense, monster.X, monster.Y, 
                         monster.Health, monster.Defense, monster.Damage, monster.Speed, monster.Alive,
                         monster.attackRangeX, monster.attackRangeY),
-                        new Vector2(10, 30), Color.White);*/
+                        new Vector2(300, 10), Color.White);*/
 
-                    _spriteBatch.DrawString(normalFont, string.Format("Health: {0}", player.Health), 
+                    
+
+                    _spriteBatch.DrawString(normalFont, 
+                        string.Format("Health: {0}" +
+                        "\nLevel: {1}" +
+                        "\nEnemy Count: {2}"
+                        , player.Health,currentLevel, enemies.Count), 
                         new Vector2(10,10), Color.White);
                     break;
 
@@ -321,6 +347,30 @@ namespace Team2_Mansion_Mayhem
                 }
             }
             return data;
+        }
+
+        public void NextLevel()
+        {
+            currentLevel += 1;
+            enemies.Clear(); // Clear the list
+
+            // decide how many enemies in a level
+            int baseMonster = 1;
+            int extraMonster = 1;
+            int totalMonster = baseMonster + (extraMonster * (currentLevel) / 2); // increase enemy per 2 levels
+
+            for (int i = 0; i < totalMonster; i++)
+            {
+                monsterLoc = new Rectangle(rng.Next(10, windowWidth - 53), rng.Next(10, windowHeight - 64), 64, 53);
+                monster = new Monster(monsterSprite, monsterLoc, 
+                    monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
+                enemies.Add(monster);
+            }
+        }
+
+        public void ResetGame()
+        {
+            currentLevel = 0;
         }
     }
 }

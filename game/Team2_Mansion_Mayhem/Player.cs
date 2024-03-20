@@ -36,12 +36,12 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private List <Projectile> projectiles = new List<Projectile>();
 
         // stats
-        protected int health;
-        protected int maxHealth;
-        protected int defense;
-        protected int damage;
-        protected bool alive = true;
-        
+        private int health;
+        private int maxHealth;
+        private int defense;
+        private int damage;
+        private bool alive = true;
+        private int damageIntake = 0;
         // projectile
         private Texture2D projectileSheet;
         private Rectangle projectileLoc;
@@ -135,19 +135,32 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             get { return isHurt; }
             set { isHurt = value; }
         }
-
+        public int Defense
+        {
+            get { return defense; }
+        }
         public int Health
         {
             get { return health; }
         }
-
+        public int DamageIntake
+        {
+            get { return damageIntake; }
+        }
+        public bool Alive
+        {
+            get { return alive; } 
+        }
         // method
         public void Update(GameTime gameTime)
         {
             kbState = Keyboard.GetState();
             shootTimer = .7;
             UpdateAnimation(gameTime);
-            
+            if (health < 1)
+            {
+                alive = false;
+            }
             if (projectiles != null) // update each projectile
             {
                 foreach (Projectile projectile in projectiles)
@@ -206,14 +219,14 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
 
         public void DamageTaken(int damage)
         {
-            int damageTaken = damage - defense;
+            damageIntake = damage - defense;
 
-            if (damageTaken < 0) // avoid taking negative damage
+            if (damageIntake < 0) // avoid taking negative damage
             {
-                damageTaken = 0;
+                damageIntake = 0;
             }
 
-            health -= damageTaken;
+            health -= damageIntake;
         }
         public void UpdateAnimation(GameTime gameTime)
         {

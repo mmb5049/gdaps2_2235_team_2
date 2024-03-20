@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Security.Cryptography.X509Certificates;
 using Team2_Mansion_Mayhem.Content.Sprites;
+using System.Runtime.InteropServices;
 
 namespace Team2_Mansion_Mayhem
 {
@@ -31,7 +32,7 @@ namespace Team2_Mansion_Mayhem
         private double rageThreshold;
         private int ragePower;
         private monsterState state;
-
+        private bool canDamage;
         private Rectangle attackRange = new Rectangle();
 
         // Animation
@@ -87,12 +88,14 @@ namespace Team2_Mansion_Mayhem
                 UpdateAnimation(gameTime);
                 attackTimer = 0.7;
                 //enrage logic.. if at rage threshold and not enraged yet..
+
                 if (((health / maxHealth) <= rageThreshold) && !enraged)
                 {
                     damage *= ragePower;
                     speed *= ragePower;
                     enraged = true;
                 }
+
                 attackRange.X = position.X - 10;
                 attackRange.Y = position.Y - 10;
                 attackRange.Width = position.Width - 5;
@@ -111,6 +114,11 @@ namespace Team2_Mansion_Mayhem
                         break;
                 }
 
+                if (!alive)
+                {
+                    position.X = 0;
+                    position.Y = 0;
+                }
                 Dead();
             }
            
@@ -144,7 +152,7 @@ namespace Team2_Mansion_Mayhem
 
         public override void Chase(Rectangle playerPosition, int windowWidth, int windowHeight)
         {
-            if (state != monsterState.AttackLeft && state != monsterState.AttackRight) 
+            if (state != monsterState.AttackLeft && state != monsterState.AttackRight && alive == true) 
             {
                 // Calculate direction towards the player by normalizing a vector
                 float deltaX = playerPosition.X - position.X;
@@ -320,14 +328,18 @@ namespace Team2_Mansion_Mayhem
                 state = monsterState.WalkRight;
                 timer = 0;
                 attackFrame = 0;
+                canDamage = true;
             }
-
-            if (Math.Abs(timer - 0.3) > 0.3)
+            
+            if ((timer - 0.3) > 0.3 && canDamage)
             {
                 if (attackRange.Intersects(player.Location))
                 {
+                    canDamage = false;
                     player.DamageTaken(damage);
+                    
                     player.IsHurt = true;
+                    
                 }
             }
         }
@@ -335,22 +347,26 @@ namespace Team2_Mansion_Mayhem
         public void ProcessAttackLeft(GameTime gameTime, double attackTimer, Player player)
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
-
+            
             if (timer >= attackTimer)
             {
                 state = monsterState.WalkLeft;
                 timer = 0;
                 attackFrame = 0;
+                canDamage = true;
             }
-
-            if (Math.Abs(timer - 0.3) > 0.3)
+            
+            if ((timer - 0.3) > 0.3 && canDamage)
             {
                 if (attackRange.Intersects(player.Location))
                 {
+                    canDamage = false;
                     player.DamageTaken(damage);
+                    
                     player.IsHurt = true;
                 }
             }
+            
         }
 
     }//end of class 

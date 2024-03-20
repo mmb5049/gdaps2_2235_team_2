@@ -21,7 +21,7 @@ namespace Team2_Mansion_Mayhem
         // field
         private Texture2D projectileSheet;
         private Rectangle location;
-        private int speed = 3;
+        private int speed = 7;
         private bool isActive;
         private projectileState state;
         private int windowWidth;
