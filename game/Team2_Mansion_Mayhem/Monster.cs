@@ -28,9 +28,13 @@ namespace Team2_Mansion_Mayhem
     }
     internal class Monster : Enemy
     {
+        //rage stats
         private bool enraged;
         private double rageThreshold;
         private int ragePower;
+        private Color rageColor;
+        
+        //states
         private monsterState state;
         private bool canDamage;
         private Rectangle attackRange = new Rectangle();
@@ -50,6 +54,7 @@ namespace Team2_Mansion_Mayhem
         private int xShift;
         private double timer;
         private double attackTimer;
+
         public Monster(Texture2D texture, Rectangle position, int health, int defense,int damage, int speed, monsterState state) 
             :base(texture, position,health, defense, damage, speed)
         {
@@ -60,11 +65,15 @@ namespace Team2_Mansion_Mayhem
             this.damage = damage;
             this.speed = speed;
             this.enraged = false;
+            this.spriteColor = Color.White;
+
             this.state = state;
             this.alive = true;
+
             //same for all Monsters.. change me if needed!
             this.rageThreshold = 0.5;
             this.ragePower = 2;
+            this.rageColor = Color.PaleVioletRed;
 
             fps = 10.0;
             timePerFrame = 1.0 / fps;
@@ -80,6 +89,7 @@ namespace Team2_Mansion_Mayhem
         {
             get { return attackRange.Y; }
         }
+
         //method
         public override void Update(GameTime gameTime, Player player)
         {
@@ -89,11 +99,12 @@ namespace Team2_Mansion_Mayhem
                 attackTimer = 0.7;
                 //enrage logic.. if at rage threshold and not enraged yet..
 
-                if (((health / maxHealth) <= rageThreshold) && !enraged)
+                if (((double)health / maxHealth <= rageThreshold) && !enraged)
                 {
                     damage *= ragePower;
                     speed *= ragePower;
                     enraged = true;
+                    spriteColor = rageColor;
                 }
 
                 attackRange.X = position.X - 10;
@@ -123,7 +134,7 @@ namespace Team2_Mansion_Mayhem
             }
            
         }
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, bool debugEnabled, SpriteFont debugFont)
         {
             if (alive == true)
             {
@@ -147,6 +158,13 @@ namespace Team2_Mansion_Mayhem
                         DrawAttackingRight(sb, SpriteEffects.None);
                         break;
                 }
+
+                //draw stats under position in the event that debug is enabled
+                if (debugEnabled)
+                {
+                    sb.DrawString(debugFont, DebugStats,
+                    new Vector2(X, Y + position.Height), Color.Black);
+                }
             }
         }
 
@@ -160,8 +178,6 @@ namespace Team2_Mansion_Mayhem
                 float distance = (float)Math.Sqrt(Math.Pow(deltaX,2) + Math.Pow(deltaY,2));
                 float directionX = deltaX / distance;
                 float directionY = deltaY / distance;
-
-                
 
                 // Calculate the new position
                 int newX = (int)(position.X + directionX * speed);
@@ -237,7 +253,7 @@ namespace Team2_Mansion_Mayhem
                     offSetY,
                     recWidth,
                     recHeight),
-                Color.White,
+                spriteColor,
                 0,
                 Vector2.Zero,
                 1.0f,
@@ -260,7 +276,7 @@ namespace Team2_Mansion_Mayhem
                     offSetY,
                     recWidth,
                     recHeight),
-                Color.White,
+                spriteColor,
                 0,
                 Vector2.Zero,
                 1.0f,
@@ -283,7 +299,7 @@ namespace Team2_Mansion_Mayhem
                     offSetY,
                     recWidth,
                     recHeight),
-                Color.White,
+                spriteColor,
                 0,
                 Vector2.Zero,
                 1.0f,

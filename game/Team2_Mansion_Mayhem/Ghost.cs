@@ -24,7 +24,7 @@ namespace Team2_Mansion_Mayhem
         Dying
     }
 
-    internal class Ghost : Enemy
+    internal class Ghost : Enemy, IDebug
     {
         private int currentFrame;
         private float animationTimer;
@@ -70,7 +70,7 @@ namespace Team2_Mansion_Mayhem
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, bool debugEnabled, SpriteFont debugFont)
         {
             // Draw the Ghost
             Rectangle sourceRect = new Rectangle(currentFrame * (textureSize / (numberOfWalkingFrames + numberOfHurtFrames + numberOfDeathFrames)), 0, textureSize / (numberOfWalkingFrames + numberOfHurtFrames + numberOfDeathFrames), textureSize);
@@ -88,6 +88,13 @@ namespace Team2_Mansion_Mayhem
                 case GhostState.Dying:
                     spriteBatch.Draw(texture, Position, sourceRect, Color.White); // Death animation
                     break;
+            }
+
+            //draw stats under position in the event that debug is enabled
+            if (debugEnabled)
+            {
+                spriteBatch.DrawString(debugFont, DebugStats,
+                new Vector2(X, Y + position.Height), Color.Black);
             }
         }
 

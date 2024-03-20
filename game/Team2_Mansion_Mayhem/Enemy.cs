@@ -11,6 +11,9 @@ using Team2_Mansion_Mayhem.Content.Sprites;
 
 namespace Team2_Mansion_Mayhem
 {
+    /// <summary>
+    /// Enemies serve as the main set of antagonists and are encountered the most commonly.
+    /// </summary>
     internal abstract class Enemy: IDebug
     {
         // fields
@@ -22,6 +25,7 @@ namespace Team2_Mansion_Mayhem
         protected int damage;
         protected int speed;
         protected bool alive;
+        protected Color spriteColor;
 
         // constructor
         public Enemy(Texture2D texture, Rectangle position, int health, int defense, int damage, int speed)
@@ -81,6 +85,7 @@ namespace Team2_Mansion_Mayhem
                  $"Health: {health}/{maxHealth} \n " +
                  $"Defense: {defense} \n " +
                  $"Damage: {damage}\n " +
+                 $"Speed: {speed}\n" +
                  $"Position: ({X}, {Y})";
             }
         }
@@ -121,7 +126,7 @@ namespace Team2_Mansion_Mayhem
         }
 
         
-        public virtual void Draw(SpriteBatch sb)
+        public virtual void Draw(SpriteBatch sb, bool debugEnabled, SpriteFont debugFont)
         {
             if (alive)
             {

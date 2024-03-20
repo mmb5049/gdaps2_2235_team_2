@@ -167,7 +167,6 @@ namespace Team2_Mansion_Mayhem
 
             enemies.Add(monster);
         }
-
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -240,6 +239,7 @@ namespace Team2_Mansion_Mayhem
                     {
                         currentState = GameState.MainMenu;
                         ResetGame();
+                        player.Reset();
                     }
                     ResetGame();
                     break;
@@ -258,10 +258,7 @@ namespace Team2_Mansion_Mayhem
             _spriteBatch.Begin();
             // TODO: Add your drawing code here
 
-            if (debugEnabled) 
-            {
-                _spriteBatch.DrawString(debugFont, $"GameState: {currentState}", new Vector2(5, windowHeight - 18), Color.Black);
-            }
+            
 
             switch (currentState)
             {
@@ -274,10 +271,10 @@ namespace Team2_Mansion_Mayhem
 
                 case GameState.Game:
                     map.Draw(_spriteBatch);
-                    player.Draw(_spriteBatch);
+                    player.Draw(_spriteBatch, debugEnabled, debugFont);
                     foreach(Monster monster in enemies)
                     {
-                        monster.Draw(_spriteBatch);
+                        monster.Draw(_spriteBatch, debugEnabled, debugFont);
                     }
 
                     /*_spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
@@ -305,6 +302,11 @@ namespace Team2_Mansion_Mayhem
                 case GameState.GameOver:
                     _spriteBatch.DrawString(headerFont, "GAME OVER", new Vector2(275, 175), Color.Red);
                     break;
+            }
+
+            if (debugEnabled)
+            {
+                _spriteBatch.DrawString(debugFont, $"---DEBUG---\nGameState: {currentState}", new Vector2(5, windowHeight - 36), Color.Black);
             }
 
             base.Draw(gameTime);

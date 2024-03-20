@@ -21,11 +21,12 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         ShootingRight,
     }
 
-    internal class Player
+    internal class Player : IDebug
     {
         // fields
         private Texture2D spriteSheet;
         private Rectangle location;
+        private Vector2 resetPoint;
         private playerState state;
         private bool isHurt;
         private KeyboardState kbState;
@@ -45,8 +46,6 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         // projectile
         private Texture2D projectileSheet;
         private Rectangle projectileLoc;
-
-
 
         // Animation
         private int frame;              // The current animation frame
@@ -70,11 +69,16 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             ,playerState state, KeyboardState kbState, Texture2D projectileSheet, int windowWidth, int windowHeight)
         {
             this.health = health;
+            this.maxHealth = health;
             this.defense = defense;
             this.damage = damage;   
             this.speed = speed;
             this.spriteSheet = spriteSheet;
             this.location = location;
+
+            this.resetPoint.X = location.X;
+            this.resetPoint.Y = location.Y;
+
             this.state = state;
             this.kbState = kbState;
             fps = 10.0;
@@ -151,7 +155,30 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         {
             get { return alive; } 
         }
+
+        public virtual string DebugStats
+        {
+            //return a list of stats to be printed 
+            get
+            {
+                return
+                 $"Health: {health}/{maxHealth} \n " +
+                 $"Defense: {defense} \n " +
+                 $"Damage: {damage}\n " +
+                 $"Position: ({X}, {Y})";
+            }
+        }
+
         // method
+
+        public void Reset()
+        {
+            health = maxHealth;
+            location.X = (int)resetPoint.X;
+            location.Y = (int)resetPoint.Y;
+            isHurt = false;
+            alive = true;
+        }
         public void Update(GameTime gameTime)
         {
             kbState = Keyboard.GetState();
@@ -266,7 +293,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 shootTimeCounter -= timePerFrame;    // Remove the time we "used" 
             }
         }
-        public void Draw(SpriteBatch sb) // draw appropriate sprite based on state
+        public void Draw(SpriteBatch sb, bool debugEnabled, SpriteFont debugFont) // draw appropriate sprite based on state
         {
             switch (state)
             {
@@ -304,7 +331,12 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                     projectile.Draw(sb);
                 }
             }
-            
+            //draw stats under position in the event that debug is enabled
+            if (debugEnabled)
+            {
+                sb.DrawString(debugFont, DebugStats,
+                new Vector2(X, Y + location.Height), Color.Black);
+            }
         }
         private void DrawWalking(SpriteBatch sb, SpriteEffects flipSprite)
         {
