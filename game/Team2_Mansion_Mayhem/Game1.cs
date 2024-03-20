@@ -35,8 +35,9 @@ namespace Team2_Mansion_Mayhem
         private SpriteFont debugFont;
         private SpriteFont headerFont;
         private SpriteFont normalFont;
-        //textures
 
+        //levels
+        private int levels;
         //misc
         private int windowHeight;
         private int windowWidth;
@@ -76,7 +77,7 @@ namespace Team2_Mansion_Mayhem
         private int ghostSpeed;
         private int ghostDefense;
         private string[] ghostData;
-        private List<Monster> monsters;
+        private List<Enemy> enemies;
 
         // map
         private Map map;
@@ -135,7 +136,7 @@ namespace Team2_Mansion_Mayhem
                     int.TryParse(ghostData[i], out ghostSpeed);
                 }
             }
-            monsters = new List<Monster>();
+            enemies = new List<Enemy>();
             base.Initialize();
         }
 
@@ -162,7 +163,7 @@ namespace Team2_Mansion_Mayhem
             monster = new Monster(monsterSprite,monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
             player = new Player(playerSprite, playerLoc, playerHealth, playerDefense, playerDamage, playerSpeed,
                 playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
-            monsters.Add(monster);
+            enemies.Add(monster);
         }
 
         protected override void Update(GameTime gameTime)
@@ -190,15 +191,24 @@ namespace Team2_Mansion_Mayhem
                     // in game update logic to be added
                     player.Update(gameTime);
 
+                    /*foreach (Monster monster in enemies)
+                    {
+                        monster.Update(gameTime, player);
+                        monster.Chase(player.Location, windowWidth, windowHeight);
+                        monster.ChangeState(gameTime, player.Location);
+                        monster.StartAttack(player.Location);
+                    }*/
+
                     monster.Update(gameTime, player);
                     monster.Chase(player.Location, windowWidth, windowHeight);
-                    monster.ChangeState(gameTime,player.Location);
+                    monster.ChangeState(gameTime, player.Location);
                     monster.StartAttack(player.Location);
+
                     foreach (Projectile projectile in player.Projectiles)
                     {
-                        foreach (Monster monster in monsters)
+                        foreach (Enemy enemy in enemies)
                         {
-                            projectile.CheckCollision(monster, player.Damage);
+                            projectile.CheckCollision(enemy, player.Damage);
                         }
                     }
                     /* temporary way to move from Game to GameOver 
@@ -206,7 +216,6 @@ namespace Team2_Mansion_Mayhem
                     */
                     if (preKbState.IsKeyUp(Keys.Space) && kbState.IsKeyDown(Keys.Space))
                     {
-                        
                         currentState = GameState.GameOver;
                     }
                     break;

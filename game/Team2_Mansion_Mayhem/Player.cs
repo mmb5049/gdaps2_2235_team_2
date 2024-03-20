@@ -204,13 +204,15 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             }
         }
 
-        public virtual void DamageTaken(int damage)
+        public void DamageTaken(int damage)
         {
             int damageTaken = damage - defense;
+
             if (damageTaken < 0) // avoid taking negative damage
             {
                 damageTaken = 0;
             }
+
             health -= damageTaken;
         }
         public void UpdateAnimation(GameTime gameTime)
