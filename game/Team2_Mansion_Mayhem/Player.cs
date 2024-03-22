@@ -29,8 +29,10 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private Vector2 resetPoint;
         private playerState state;
         private bool isHurt;
+        private bool isShooting = false;
         private KeyboardState kbState;
         private KeyboardState preKbState;
+        private MouseState mouseState;
         private int speed;
         private int windowWidth;
         private int windowHeight;
@@ -43,7 +45,9 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private int damage;
         private bool alive = true;
         private int damageIntake = 0;
+
         // projectile
+        private double lookAngle;
         private Texture2D projectileSheet;
         private Rectangle projectileLoc;
 
@@ -64,6 +68,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private double timer = 0;
         private double shootTimer;
         private double hurtTimer = 0;
+        private int shootEventFrame = 4;
         // Constructor
         public Player(Texture2D spriteSheet, Rectangle location, int health, int defense, int damage, int speed 
             ,playerState state, KeyboardState kbState, Texture2D projectileSheet, int windowWidth, int windowHeight)
@@ -162,10 +167,14 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             get
             {
                 return
+                 $"State: {state}\n" +
                  $"Health: {health}/{maxHealth} \n " +
                  $"Defense: {defense} \n " +
                  $"Damage: {damage}\n " +
-                 $"Position: ({X}, {Y})";
+                 $"Position: ({X}, {Y})\n" +
+                 $"Mouse Position: ({mouseState.Position})\n" +
+                 $"(Shoot angle of {lookAngle * 180/Math.PI})\n" +
+                 $"Shooting? {isShooting}";
             }
         }
 
@@ -179,11 +188,37 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             isHurt = false;
             alive = true;
         }
+
+        /// <summary>
+        /// Returns the angle between the center of the character and the mouse's position in degrees. 
+        /// </summary>
+        public double UpdateAngle()
+        {
+            double distanceX = mouseState.Position.X - location.Center.X;
+            double distanceY = mouseState.Position.Y - location.Center.Y;
+            return Math.Atan2(distanceY, distanceX);
+        }
+
+        public void DamageTaken(int damage)
+        {
+            damageIntake = damage - defense;
+
+            if (damageIntake < 0) // avoid taking negative damage
+            {
+                damageIntake = 0;
+            }
+
+            health -= damageIntake;
+        }
+
         public void Update(GameTime gameTime)
         {
             kbState = Keyboard.GetState();
+            mouseState = Mouse.GetState();
+            lookAngle = UpdateAngle();
             shootTimer = .7;
             UpdateAnimation(gameTime);
+
             if (health < 1)
             {
                 alive = false;
@@ -212,49 +247,95 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 ProcessGetHurt(gameTime);
             }
 
-            switch (state)
-            {
-                case playerState.FaceLeft:
-                    ProcessFaceLeft(kbState);
-                    break;
-
-                case playerState.FaceRight:
-                    ProcessFaceRight(kbState);
-                    break;
-
-                case playerState.WalkLeft: 
-                    ProcessWalkLeft(kbState);
-                    
-                    break;
-
-                case playerState.WalkRight:
-                    ProcessWalkRight(kbState);
-                    
-                    break;
-
-                case playerState.ShootingRight:
-                    UpdateShootAnimation(gameTime);
-                    ProcessShootRight(kbState, gameTime, shootTimer);
-                    break;
-
-                case playerState.ShootingLeft:
-                    UpdateShootAnimation(gameTime);
-                    ProcessShootLeft(kbState, gameTime, shootTimer);
-                    break;
-            }
+            ProcessMovement(gameTime, kbState);
         }
 
-        public void DamageTaken(int damage)
+        public void ProcessMovement(GameTime gameTime, KeyboardState kbState)
         {
-            damageIntake = damage - defense;
+            int movementX = 0;
+            int movementY = 0;
 
-            if (damageIntake < 0) // avoid taking negative damage
+            if (isShooting == false)
             {
-                damageIntake = 0;
-            }
+                //these evaluate to 1 if the player is moving in a positive direction, 0 if they are holding both keys, and
+                //-1 if the player is moving in a negative direction.
 
-            health -= damageIntake;
+                movementX = (Convert.ToInt32(kbState.IsKeyDown(Keys.D)) - Convert.ToInt32(kbState.IsKeyDown(Keys.A)));
+                movementY = (Convert.ToInt32(kbState.IsKeyDown(Keys.S)) - Convert.ToInt32(kbState.IsKeyDown(Keys.W)));
+                location.X += speed * movementX;
+                location.Y += speed * movementY;
+
+                //the first two evaluate if the player is moving
+                if (movementX == 1 && !isShooting)
+                {
+                    state = playerState.WalkRight;
+                }
+                else if (movementX == -1 && !isShooting)
+                {
+                    state = playerState.WalkLeft;
+                }
+                //this evaluates if the player is moving BUT only in the y direction
+                else if (movementY != 0 && !isShooting)
+                {
+                    //in this case, the walk direction is based on the player's direction while still
+                    if (state == playerState.FaceLeft)
+                    {
+                        state = playerState.WalkLeft;
+                    }
+                    if (state == playerState.FaceRight)
+                    {
+                        state = playerState.WalkRight;
+                    }
+                }
+                //if player is standing still..
+                else
+                {
+                    //if player's mouse is located to the right..
+                    if (mouseState.X >= location.Center.X)
+                    {
+                        state = playerState.FaceRight;
+                    }
+                    //if player's mouse is located to the left..
+                    else
+                    {
+                        state = playerState.FaceLeft;
+                    }
+                }
+
+                //if attempting to shoot
+                if (mouseState.LeftButton == ButtonState.Pressed || isShooting)
+                {
+                    //if player's mouse is located to the right..
+                    if (mouseState.X >= location.Center.X)
+                    {
+                        state = playerState.ShootingRight;
+
+                    }
+                    //if player's mouse is located to the left..
+                    else
+                    {
+                        state = playerState.ShootingLeft;
+                    }
+
+                    isShooting = true;
+                }
+            }
+            else
+            {
+                if (mouseState.X >= location.Center.X)
+                {
+                    state = playerState.ShootingRight;
+                }
+                //if player's mouse is located to the left..
+                else
+                {
+                    state = playerState.ShootingLeft;
+                    
+                }
+                UpdateShootAnimation(gameTime);
+            }
         }
+
         public void UpdateAnimation(GameTime gameTime)
         {
             // Handle animation timing
@@ -286,9 +367,16 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             if (shootTimeCounter >= timePerFrame)
             {
                 shootFrame += 1;                     // Adjust the frame to the next image
-
-                if (shootFrame > frameCount)     // Check the bounds 
+                
+                if (shootFrame == shootEventFrame) //if the animation is at the frame where the bullet is supposed to appear aka the apex of the thrust
+                {
+                    ProcessShoot();
+                }
+                if (shootFrame > frameCount)
+                {
                     shootFrame = 1;
+                    isShooting = false;
+                }
 
                 shootTimeCounter -= timePerFrame;    // Remove the time we "used" 
             }
@@ -328,7 +416,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             {
                 foreach (Projectile projectile in projectiles)
                 {
-                    projectile.Draw(sb);
+                    projectile.Draw(sb, debugEnabled, debugFont);
                 }
             }
             //draw stats under position in the event that debug is enabled
@@ -431,144 +519,23 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
 
         }
 
-        private void ProcessFaceLeft(KeyboardState keyState) // when player face left
+        private void ProcessShoot()
         {
-            // walk right
-            if (keyState.IsKeyDown(Keys.D))
-            {
-                state = playerState.FaceRight;
-            }
-
-            // walk left
-            if (keyState.IsKeyDown(Keys.A) || keyState.IsKeyDown(Keys.S) || keyState.IsKeyDown(Keys.W)) 
-            {
-                state = playerState.WalkLeft;
-            }
-
-            if (keyState.IsKeyDown(Keys.J))
-            {
-                state = playerState.ShootingLeft;
-            }
-        }
-
-        private void ProcessFaceRight(KeyboardState keyState) // when player face right
-        {
-            // walk left
-            if (keyState.IsKeyDown(Keys.A)) 
-            {
-                state = playerState.FaceLeft;
-            }
-
-            // walk right
-            if (keyState.IsKeyDown(Keys.D) || keyState.IsKeyDown(Keys.S) || keyState.IsKeyDown(Keys.W)) 
-            {
-                state = playerState.WalkRight;
-            }
-
-            if (keyState.IsKeyDown(Keys.J))
-            {
-                state = playerState.ShootingRight;
-            }
-        }
-
-        private void ProcessWalkRight(KeyboardState keyState) // when player walk right
-        {
-            
-
-            // stop when D, S, W stop being pressed
-            if (keyState.IsKeyUp(Keys.D) && keyState.IsKeyUp(Keys.S) && keyState.IsKeyUp(Keys.W))  
-            {
-                state = playerState.FaceRight;
-            }
-
-            if (keyState.IsKeyDown(Keys.D))
-            {
-                location.X += speed;
-            }
-
-            
-            if (keyState.IsKeyDown(Keys.S))
-            {
-                location.Y += speed;
-            }
-
-            if (keyState.IsKeyDown(Keys.W))
-            {
-                location.Y -= speed;
-            }
-        }
-
-        private void ProcessWalkLeft(KeyboardState keyState) // when player walk right
-        {
-            
-            // stop when A, S, W stop being pressed
-            
-            if (keyState.IsKeyUp(Keys.A) && keyState.IsKeyUp(Keys.S) && keyState.IsKeyUp(Keys.W))
-            {
-                state = playerState.FaceLeft;
-            }
-
-            // move around
-            if (keyState.IsKeyDown(Keys.S))
-            {
-                location.Y += speed;
-            }
-            if (keyState.IsKeyDown(Keys.A))
-            {
-                location.X -= speed;
-            }
-            if (keyState.IsKeyDown(Keys.W))
-            {
-                location.Y -= speed;
-            }
-        }
-
-        private void ProcessShootRight(KeyboardState keyState, GameTime gameTime, double shootTimer)
-        {
-            timer += gameTime.ElapsedGameTime.TotalSeconds;
-
-            // Check if timer is within a small range around 0.67
-            // Cannot use == because the timing is so fast to register
-            if (Math.Abs(timer - 0.67) < 0.01 )
-            {
-                // spawn a projectile
-                projectileLoc = new Rectangle((int)(location.X + 64), (int)(location.Y + (recHeight / 2)), 20,18);
+                if (state == playerState.ShootingLeft)
+                {
+                    // spawn a projectile
+                    projectileLoc = new Rectangle((int)(location.Center.X - 3), (int)(location.Center.Y + 6), 20, 18);
+                }
+                else
+                {
+                    // spawn a projectile
+                    projectileLoc = new Rectangle((int)(location.Center.X + 16), (int)(location.Center.Y + 6), 20, 18);
+                }
+                
 
                 Projectile projectile = new Projectile
-                    (projectileSheet, projectileLoc, projectileState.FaceRight, windowWidth, windowHeight);
+                    (projectileSheet, projectileLoc,lookAngle, projectileState.FaceRight, windowWidth, windowHeight);
                 projectiles.Add(projectile);
-            }
-
-            if (timer >= shootTimer)
-            {
-                state = playerState.FaceRight;
-                timer = 0;
-                shootFrame = 0;
-            }
-        }
-
-        private void ProcessShootLeft(KeyboardState keyState, GameTime gameTime, double shootTimer)
-        {
-            timer += gameTime.ElapsedGameTime.TotalSeconds;
-
-            // Check if timer is within a small range around 0.67
-            // Cannot use == because the timing is so fast to register
-            if (Math.Abs(timer - 0.67) < 0.01)
-            {
-                // spawn a projectile
-                projectileLoc = new Rectangle((int)location.X - 10, (int)location.Y + (recHeight / 2), 20, 18);
-
-                Projectile projectile = new Projectile
-                    (projectileSheet, projectileLoc, projectileState.FaceLeft, windowWidth, windowHeight);
-                projectiles.Add(projectile);
-            }
-
-            if (timer >= shootTimer)
-            {
-                state = playerState.FaceLeft;
-                timer = 0;
-                shootFrame = 0;
-            }
         }
 
         private void ProcessGetHurt (GameTime gameTime)

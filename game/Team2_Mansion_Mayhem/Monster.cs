@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Security.Cryptography.X509Certificates;
 using Team2_Mansion_Mayhem.Content.Sprites;
 using System.Runtime.InteropServices;
+using System.IO;
 
 namespace Team2_Mansion_Mayhem
 {
@@ -54,7 +55,7 @@ namespace Team2_Mansion_Mayhem
         private int xShift;
         private double timer;
         private double attackTimer;
-
+        private double attackEventFrame = 4;
         public Monster(Texture2D texture, Rectangle position, int health, int defense,int damage, int speed, monsterState state) 
             :base(texture, position,health, defense, damage, speed)
         {
@@ -174,10 +175,10 @@ namespace Team2_Mansion_Mayhem
             {
                 // Calculate direction towards the player by normalizing a vector
                 float deltaX = playerPosition.X - position.X;
-                float deltaY = playerPosition.Y - position.Y;
+                float deltaY = playerPosition.Center.Y - position.Center.Y;
                 float distance = (float)Math.Sqrt(Math.Pow(deltaX,2) + Math.Pow(deltaY,2));
-                float directionX = deltaX / distance;
-                float directionY = deltaY / distance;
+                float directionX = (float)deltaX / distance;
+                float directionY = (float)deltaY / distance;
 
                 // Calculate the new position
                 int newX = (int)(position.X + directionX * speed);
@@ -347,7 +348,7 @@ namespace Team2_Mansion_Mayhem
                 canDamage = true;
             }
             
-            if ((timer - 0.3) > 0.3 && canDamage)
+            if ((attackFrame == attackEventFrame) && canDamage)
             {
                 if (attackRange.Intersects(player.Location))
                 {

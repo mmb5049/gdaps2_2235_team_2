@@ -265,7 +265,7 @@ namespace Team2_Mansion_Mayhem
                 case GameState.MainMenu:
                     _spriteBatch.DrawString(headerFont, "Mansion Mayhem", new Vector2(275, 175), Color.Red);
                     _spriteBatch.DrawString(normalFont, 
-                        "Instruction: \nMove: WASD \nShoot : J \nStartGame: Space",
+                        "Instruction: \nMove: WASD \nShoot : Mouse \nStartGame: Space",
                         new Vector2(175, 250), Color.White);
                     break;
 

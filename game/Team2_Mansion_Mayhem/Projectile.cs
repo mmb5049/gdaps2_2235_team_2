@@ -7,21 +7,23 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Team2_Mansion_Mayhem
 {
-    enum projectileState
+    enum projectileState 
     {
         FaceLeft, 
         FaceRight,
     }
-
-    internal class Projectile
+    
+    internal class Projectile : IDebug
     {
         // field
         private Texture2D projectileSheet;
         private Rectangle location;
         private int speed = 7;
+        private double rotation;
         private bool isActive;
         private projectileState state;
         private int windowWidth;
@@ -39,10 +41,11 @@ namespace Team2_Mansion_Mayhem
 
 
         // constructor
-        public Projectile(Texture2D projectileSheet, Rectangle location, projectileState state, int windowWidth, int windowHeight)
+        public Projectile(Texture2D projectileSheet, Rectangle location, double rotation, projectileState state, int windowWidth, int windowHeight)
         {
             this.projectileSheet = projectileSheet;
             this.location = location;
+            this.rotation = rotation;
             this.state = state;
 
             isActive = true;
@@ -64,6 +67,16 @@ namespace Team2_Mansion_Mayhem
         public Rectangle Location
         {
             get { return location; }
+        }
+        public virtual string DebugStats
+        {
+            //return a list of stats to be printed 
+            get
+            {
+                return
+                 $"Speed: {speed}\n" +
+                 $"Rotation: {rotation}";
+            }
         }
         // method
         public void UpdateAnimation(GameTime gameTime)
@@ -90,16 +103,19 @@ namespace Team2_Mansion_Mayhem
         {
             UpdateAnimation(gameTime);
 
-            switch (state)
+            //switch (state)
             {
-                case projectileState.FaceRight:
-                    location.X += speed;
-                    break;
+                //case projectileState.FaceRight:
+                    //location.X += speed;
+                    //break;
 
-                case projectileState.FaceLeft:
-                    location.X -= speed;
-                    break;
+                //case projectileState.FaceLeft:
+                    //location.X -= speed;
+                    //break;
             }
+
+            location.X += (int)(speed * Math.Cos((double)rotation));
+            location.Y += (int)(speed * Math.Sin((double)rotation));
 
             // deactivate when move out of window
             if (location.X >= windowWidth || location.X <= 0 || location.Y >= windowHeight || location.Y <= 0)
@@ -108,19 +124,17 @@ namespace Team2_Mansion_Mayhem
             }
         }
 
-        public void Draw(SpriteBatch sb)
+        public void Draw(SpriteBatch sb, bool debugEnabled, SpriteFont debugFont)
         {
             if (isActive)
             {
-                switch (state)
-                {
-                    case projectileState.FaceRight:
-                        DrawFlying(sb, SpriteEffects.None); 
-                        break;
+               DrawFlying(sb, SpriteEffects.None); 
 
-                    case projectileState.FaceLeft:
-                        DrawFlying(sb, SpriteEffects.FlipHorizontally);
-                        break;
+                //draw stats under position in the event that debug is enabled
+                if (debugEnabled)
+                {
+                    sb.DrawString(debugFont, DebugStats,
+                    new Vector2(location.X, location.Y + location.Height), Color.Black);
                 }
             }
         }
@@ -136,8 +150,8 @@ namespace Team2_Mansion_Mayhem
                     recWidth,
                     recHeight),
                 Color.White,
-                0,
-                Vector2.Zero,
+                (float)rotation,
+                new Vector2(location.Width/2, location.Height/2),
                 1.0f,
                 flipSprite,
                 0);
