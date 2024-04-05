@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Team2_Mansion_Mayhem.Content.Sprites;
 
 namespace Team2_Mansion_Mayhem
 {
@@ -13,32 +15,108 @@ namespace Team2_Mansion_Mayhem
     internal class Obstacle
     {
         // fields
-        protected Vector2 position;
+        protected Rectangle position;
         protected Texture2D spriteSheet;
         // could be used to determine where certain obstacles go
         protected int windowWidth;
         protected int windowHeight;
-
-        // other obstacles will be added during Sprint 3
+        // keeps track of obstacle positions
+        protected List<Rectangle> obsPos;
 
         public Obstacle(Texture2D spriteSheet, int windowWidth, int windowHeight)
         {
             this.spriteSheet = spriteSheet;
             this.windowWidth = windowWidth;
             this.windowHeight = windowHeight;
+            obsPos = new List<Rectangle>();
         }
 
         // properties
-        public float X
+        public int X
         {
             get { return this.position.X; }
             set { this.position.X = value; }
         }
-        public float Y
+        public int Y
         {
             get { return this.position.Y; }
             set { this.position.Y = value; }
         }
+        
+        public void DrawTable(SpriteBatch sb, Vector2 position)
+        {
+            // variables for the table source rectangles
+            int leftTableOffsetX = 13 * 16;
+            int midTableOffsetX = 14 * 16;
+            int rightTableOffsetX = 15 * 16;
+            int tableOffsetY = 3 * 16;
+            int tableLegOffsetY = 4 * 16;
+
+            // draw the left part of the table
+            sb.Draw(
+                spriteSheet,
+                position,
+                new Rectangle(leftTableOffsetX, tableOffsetY, 16, 16),
+                Color.White);
+            // draw the middle part of the table
+            sb.Draw(
+                spriteSheet,
+                new Vector2(position.X + 16, position.Y),
+                new Rectangle(midTableOffsetX, tableOffsetY, 16, 16),
+                Color.White);
+            // draw the right part of the table
+            sb.Draw(
+                spriteSheet,
+                new Vector2(position.X + 32, position.Y),
+                new Rectangle(rightTableOffsetX, tableOffsetY, 16, 16),
+                Color.White);
+            // draw the table legs
+            sb.Draw(
+                spriteSheet,
+                new Vector2(position.X, position.Y + 16),
+                new Rectangle(leftTableOffsetX, tableLegOffsetY, 16, 16),
+                Color.White);
+            sb.Draw(
+                spriteSheet,
+                new Vector2(position.X + 32, position.Y + 16),
+                new Rectangle(leftTableOffsetX, tableLegOffsetY, 16, 16),
+                Color.White);
+            obsPos.Add(new Rectangle((int)position.X, (int)position.Y, 48, 24));
+        }
+
+        // still unsure how I'd implement collision for these obstacles
+        /*
+        public void CheckCollision(Player p, Enemy e)
+        {
+            // if a player collides with an obstacle
+            Rectangle preLocation = p.Location;
+            if (this.position.Intersects(p.Location))
+            {
+                foreach (Rectangle pos in obsPos)
+                {
+                    if (pos.Intersects(p.Location))
+                    {
+                        p.X -= pos.X * 5;
+                        p.Y -= pos.Y * 5;
+                    }
+                }
+            }
+            // if an enemy collides with an obstacle
+            else if (this.position.Intersects(e.Position))
+            {
+                foreach (Rectangle pos in obsPos)
+                {
+                    if (e.Position.X == pos.X)
+                    {
+                        e.X--;
+                    }
+                    else if (e.Position.Y == pos.Y)
+                    {
+                        e.Y--;
+                    }
+                }
+            }
+        }*/
 
     }
 }

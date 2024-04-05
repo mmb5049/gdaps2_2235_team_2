@@ -21,7 +21,8 @@ namespace Team2_Mansion_Mayhem
         private int rectOffsetY = 80;
         private int tileFrameX = 16;
         private int tileFrameY = 16;
-
+        
+        
         // constructor
         public Map(Texture2D spriteSheet, int windowWidth, int windowHeight)
         {
@@ -38,6 +39,7 @@ namespace Team2_Mansion_Mayhem
             int tilesRow = windowWidth / tileFrameX;
             int tilesCol = windowHeight / tileFrameY;
             Wall walls = new Wall(spriteSheet, windowWidth, windowHeight);
+            Obstacle obs = new Obstacle(spriteSheet, windowWidth, windowHeight);
             for(int i = 0; i < tilesRow; i++)
             {
                 for(int j = 0; j < tilesCol; j++)
@@ -46,16 +48,16 @@ namespace Team2_Mansion_Mayhem
                         spriteSheet,
                         new Vector2((float)(i * tileFrameX), (float)(j * tileFrameY)),
                         new Rectangle(0, rectOffsetY, tileFrameX, tileFrameY),
-                        Color.White,
-                        0,
-                        Vector2.Zero,
-                        1.0f,
-                        0,
-                        0);
+                        Color.White);
                         
                 }
             }
             walls.DrawTopWall(sb);
+            
+            for(int i = 1; i < 4; i++)
+            {
+                obs.DrawTable(sb, new Vector2(i * 100, i * 100));
+            }
         }
     }
 }

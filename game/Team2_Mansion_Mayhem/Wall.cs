@@ -24,11 +24,10 @@ namespace Team2_Mansion_Mayhem
         private int sideWallOffsetX = 128;
         private int sideWallOffsetY = 16;
 
-        private List<Point> wallPos;
 
         public Wall(Texture2D spriteSheet, int windowWidth, int windowHeight):base(spriteSheet, windowWidth, windowHeight)
         {
-            wallPos = new List<Point>();
+            
         }
 
         // draws the top wall sprites and adds each tile to a list to detect collision
@@ -44,14 +43,9 @@ namespace Team2_Mansion_Mayhem
                         spriteSheet,
                         new Vector2((float)(i * 16), (float)(0)),
                         new Rectangle(leftEndWallOffsetX, endWallOffsetY, 16, 16),
-                        Color.White,
-                        0,
-                        Vector2.Zero,
-                        1.0f,
-                        0,
-                        0);
-                    // adds the wall to the list to de
-                    wallPos.Add(new Point((i * 16), 0));
+                        Color.White);
+                    // adds the wall to the list to detect collisions
+                    obsPos.Add(new Rectangle((i * 16), 0, 16, 16));
                 }
                 else if(i == tilesRow - 1)
                 {
@@ -59,13 +53,8 @@ namespace Team2_Mansion_Mayhem
                         spriteSheet,
                         new Vector2((float)(i * 16), (float)(0)),
                         new Rectangle(rightEndWallOffsetX, endWallOffsetY, 16, 16),
-                        Color.White,
-                        0,
-                        Vector2.Zero,
-                        1.0f,
-                        0,
-                        0);
-                    wallPos.Add(new Point((i * 16), 0));
+                        Color.White);
+                    obsPos.Add(new Rectangle((i * 16), 0, 16, 16));
                 }
                 else
                 {
@@ -73,16 +62,13 @@ namespace Team2_Mansion_Mayhem
                         spriteSheet,
                         new Vector2((float)(i * 16), (float)(0)),
                         new Rectangle(topWallOffsetX, topWallOffsetY, 16, 16),
-                        Color.White,
-                        0,
-                        Vector2.Zero,
-                        1.0f,
-                        0,
-                        0);
-                    wallPos.Add(new Point((i * 16), 0));
+                        Color.White);
+                    obsPos.Add(new Rectangle((i * 16), 0, 16, 16));
                 }
             }
         }
+
+        
 
         
     }

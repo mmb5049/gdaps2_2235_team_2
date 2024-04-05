@@ -80,9 +80,10 @@ namespace Team2_Mansion_Mayhem
         private string[] ghostData;
         private List<Enemy> enemies;
 
-        // map
+        // map & obstacles
         private Map map;
         private Texture2D mapSprite;
+        private Obstacle obstacles;
 
         public Game1()
         {
@@ -159,6 +160,8 @@ namespace Team2_Mansion_Mayhem
             monsterSprite = Content.Load<Texture2D>("Sprites/monsterSpriteSheet");
 
             mapSprite = Content.Load<Texture2D>("Sprites/mapSpriteSheet");
+
+            obstacles = new Obstacle(mapSprite, windowWidth, windowHeight);
 
             map = new Map(mapSprite, windowWidth, windowHeight);
             monster = new Monster(monsterSprite,monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
