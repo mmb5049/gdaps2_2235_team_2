@@ -12,10 +12,9 @@ using Team2_Mansion_Mayhem.Content.Sprites;
 
 namespace Team2_Mansion_Mayhem
 {
-    /* a subclass of Enemy, a low level enemy 
-    * whose main feature is the ability 
-    * to pass through obstacles
-    */
+    /*  a subclass of Enemy, a low level enemy 
+        whose main feature is the ability 
+        to pass through obstacles               */
 
     enum GhostState
     {
@@ -30,7 +29,6 @@ namespace Team2_Mansion_Mayhem
         private float animationTimer;
         private GhostState currentState;
 
-        private const int textureSize = 32;
         private const int numberOfWalkingFrames = 4;
         private const int numberOfHurtFrames = 4;
         private const int numberOfDeathFrames = 8;
@@ -72,25 +70,10 @@ namespace Team2_Mansion_Mayhem
 
         public override void Draw(SpriteBatch spriteBatch, bool debugEnabled, SpriteFont debugFont)
         {
-            // Draw the Ghost
-            Rectangle sourceRect = new Rectangle(currentFrame * (textureSize / (numberOfWalkingFrames + numberOfHurtFrames + numberOfDeathFrames)), 0, textureSize / (numberOfWalkingFrames + numberOfHurtFrames + numberOfDeathFrames), textureSize);
+            // Draw the Ghost animation
+            DrawGhostAnimation(spriteBatch, SpriteEffects.None);
 
-            switch (currentState)
-            {
-                case GhostState.Normal:
-                    spriteBatch.Draw(texture, Position, sourceRect, Color.White); // Walking animation
-                    break;
-
-                case GhostState.Hurt:
-                    spriteBatch.Draw(texture, Position, sourceRect, Color.Red); // Hurt animation
-                    break;
-
-                case GhostState.Dying:
-                    spriteBatch.Draw(texture, Position, sourceRect, Color.White); // Death animation
-                    break;
-            }
-
-            //draw stats under position in the event that debug is enabled
+            // Draw stats under position in the event that debug is enabled
             if (debugEnabled)
             {
                 spriteBatch.DrawString(debugFont, DebugStats,
@@ -104,11 +87,10 @@ namespace Team2_Mansion_Mayhem
             UpdateAnimation(gameTime, numberOfWalkingFrames);
 
             // Chase the player disregarding collision detections of obstacles
-            //Chase();
 
             // When damage is taken, go to hurt state
 
-            // When health is 0 or less, go to dying state
+            // When health is 0 or less, transition to dying state
             if (health <= 0)
             {
                 currentState = GhostState.Dying;
@@ -120,8 +102,7 @@ namespace Team2_Mansion_Mayhem
             // Update hurt animation
             UpdateAnimation(gameTime, numberOfHurtFrames);
 
-            // Ghost becomes invulnerable and speed decreases after hurt animation
-            //Chase();
+            // Ghost becomes invulnerable and speed decreases during hurt animation
 
             // Transition back to normal state after hurt animation is done
             if (currentFrame == numberOfHurtFrames - 1)
@@ -145,6 +126,52 @@ namespace Team2_Mansion_Mayhem
             {
                 // Logic to remove from the game
             }
+        }
+
+        private void DrawGhostAnimation(SpriteBatch spriteBatch, SpriteEffects flipSprite)
+        {
+            int recWidth = 32;
+            int recHeight = 32;
+            int offsetY = 0;
+            int frameCount = 0;
+
+            // Draw Ghost animation based on current state
+            switch (currentState)
+            {
+                case GhostState.Normal:
+                    offsetY = 0;
+                    frameCount = numberOfWalkingFrames;
+                    break;
+
+                case GhostState.Hurt:
+                    offsetY = 32;
+                    frameCount = numberOfHurtFrames;
+                    break;
+
+                case GhostState.Dying:
+                    offsetY = 64;
+                    frameCount = numberOfDeathFrames;
+                    break;
+            }
+
+            // Current frame
+            Rectangle sourceRect = new Rectangle(
+                currentFrame * recWidth,
+                offsetY,
+                recWidth,
+                recHeight);
+
+            // Draw the frame of the animation
+            spriteBatch.Draw(
+                texture,
+                new Vector2((float)position.X, (float)position.Y),
+                sourceRect,
+                spriteColor,
+                0,
+                Vector2.Zero,
+                1.0f,
+                flipSprite,
+                0);
         }
 
         private void UpdateAnimation(GameTime gameTime, int totalFrames)
