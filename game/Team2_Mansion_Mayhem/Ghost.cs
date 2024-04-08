@@ -184,7 +184,7 @@ namespace Team2_Mansion_Mayhem
 
             // Current frame
             Rectangle sourceRect = new Rectangle(
-                currentFrame * recWidth,
+                currentFrame * recSize,
                 offsetY,
                 recSize,
                 recSize);
