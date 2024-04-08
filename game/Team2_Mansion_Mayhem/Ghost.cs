@@ -36,7 +36,7 @@ namespace Team2_Mansion_Mayhem
         private const int numberOfWalkingFrames = 4;
         private const int numberOfHurtFrames = 4;
         private const int numberOfDeathFrames = 8;
-        private const float animationSpeed = 0.2f;
+        private const float animationSpeed = 1.0f;
 
         public Ghost(Texture2D texture, Rectangle position, int health, int defense, int damage, int speed) 
             : base(texture, position, health, defense, damage, speed)
@@ -84,8 +84,7 @@ namespace Team2_Mansion_Mayhem
             // Draw stats under position in the event that debug is enabled
             if (debugEnabled)
             {
-                spriteBatch.DrawString(debugFont, DebugStats,
-                new Vector2(X, Y + position.Height), Color.Black);
+                spriteBatch.DrawString(debugFont, DebugStats, new Vector2(X, Y + position.Height), Color.Black);
             }
         }
 
@@ -94,7 +93,7 @@ namespace Team2_Mansion_Mayhem
             // Update walking animation
             UpdateAnimation(gameTime, numberOfWalkingFrames);
 
-            // If damage is taken and health < 1, transition to Hurt state
+            // If damage is taken and health > 0, transition to Hurt state
             if (damageTaken)
             {
                 if (health > 0)
@@ -106,8 +105,8 @@ namespace Team2_Mansion_Mayhem
                 damageTaken = false;
             }
 
-            // When health is 0 or less, transition to Dying state
-            if (health <= 0)
+            // When health reaches 0, transition to Dying state
+            if (health < 1)
             {
                 currentState = GhostState.Dying;
                 currentFrame = 0;
@@ -160,8 +159,7 @@ namespace Team2_Mansion_Mayhem
 
         private void DrawGhostAnimation(SpriteBatch spriteBatch, SpriteEffects flipSprite)
         {
-            int recWidth = 32;
-            int recHeight = 32;
+            int recSize = 32;
             int offsetY = 0;
             int frameCount = 0;
 
@@ -188,8 +186,8 @@ namespace Team2_Mansion_Mayhem
             Rectangle sourceRect = new Rectangle(
                 currentFrame * recWidth,
                 offsetY,
-                recWidth,
-                recHeight);
+                recSize,
+                recSize);
 
             // Draw the frame of the animation
             spriteBatch.Draw(

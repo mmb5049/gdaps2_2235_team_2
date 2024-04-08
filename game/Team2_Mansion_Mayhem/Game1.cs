@@ -146,11 +146,11 @@ namespace Team2_Mansion_Mayhem
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
             debugFont = Content.Load<SpriteFont>("Fonts/Debugfont");
             headerFont = Content.Load<SpriteFont>("Fonts/Header");
             normalFont = Content.Load<SpriteFont>("Fonts/normalFont");
-            // load sprite
+
+            // Load sprites
             playerLoc = new Rectangle(50, 50, 22, 49);
             playerSprite = Content.Load<Texture2D>("Sprites/newPlayerSpriteSheet");
 
@@ -159,16 +159,21 @@ namespace Team2_Mansion_Mayhem
             monsterLoc = new Rectangle (200, 200, 64, 53);
             monsterSprite = Content.Load<Texture2D>("Sprites/monsterSpriteSheet");
 
+            ghostLoc = new Rectangle(200, 200, 64, 53);
+            ghostSprite = Content.Load<Texture2D>("Sprites/ghostSpriteSheet");
+
             mapSprite = Content.Load<Texture2D>("Sprites/mapSpriteSheet");
 
             obstacles = new Obstacle(mapSprite, windowWidth, windowHeight);
 
             map = new Map(mapSprite, windowWidth, windowHeight);
             monster = new Monster(monsterSprite,monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
+            ghost = new Ghost(ghostSprite, ghostLoc, ghostHealth, ghostDefense, ghostDamage, ghostSpeed);
             player = new Player(playerSprite, playerLoc, playerHealth, playerDefense, playerDamage, playerSpeed,
                 playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
 
             enemies.Add(monster);
+            enemies.Add(ghost);
         }
         protected override void Update(GameTime gameTime)
         {
@@ -177,15 +182,16 @@ namespace Team2_Mansion_Mayhem
 
             kbState = Keyboard.GetState();
 
-            //toggle debug if the user presses Tilde (~)
+            // Toggle debug if the user presses Tilde (~)
             if (kbState.IsKeyDown(Keys.OemTilde) && preKbState.IsKeyUp(Keys.OemTilde)) 
             { 
                 debugEnabled = !debugEnabled;
             }
+
             switch (currentState)
             {
                 case GameState.MainMenu:
-                    // starts game by pressing space
+                    // Starts game by pressing space
                     if(preKbState.IsKeyUp(Keys.Space) && kbState.IsKeyDown(Keys.Space))
                     {
                         currentState = GameState.Game;
@@ -194,7 +200,7 @@ namespace Team2_Mansion_Mayhem
                     break;
 
                 case GameState.Game:
-                    // in game update logic to be added
+                    // In game update logic to be added
                     player.Update(gameTime);
                     
                     if (enemies != null)
@@ -205,6 +211,12 @@ namespace Team2_Mansion_Mayhem
                             monster.Chase(player.Location, windowWidth, windowHeight);
                             monster.ChangeState(gameTime, player.Location);
                             monster.StartAttack(player.Location);
+                        }
+
+                        foreach (Monster ghost in enemies)
+                        {
+                            ghost.Update(gameTime, player);
+                            ghost.Chase(player.Location, windowWidth, windowHeight);
                         }
 
                         foreach (Projectile projectile in player.Projectiles)
@@ -236,6 +248,7 @@ namespace Team2_Mansion_Mayhem
                         currentState = GameState.GameOver;
                     }
                     break;
+
                 case GameState.GameOver:
                     // sends player back to main menu when they press Space on the GameOver screen
                     if (preKbState.IsKeyUp(Keys.Space) && kbState.IsKeyDown(Keys.Space))
@@ -246,6 +259,7 @@ namespace Team2_Mansion_Mayhem
                     }
                     ResetGame();
                     break;
+
                 default:
                     break;
             }
@@ -259,9 +273,6 @@ namespace Team2_Mansion_Mayhem
             GraphicsDevice.Clear(Color.Black);
 
             _spriteBatch.Begin();
-            // TODO: Add your drawing code here
-
-            
 
             switch (currentState)
             {
@@ -291,8 +302,6 @@ namespace Team2_Mansion_Mayhem
                         monster.Health, monster.Defense, monster.Damage, monster.Speed, monster.Alive,
                         monster.attackRangeX, monster.attackRangeY),
                         new Vector2(300, 10), Color.White);*/
-
-                    
 
                     _spriteBatch.DrawString(normalFont, 
                         string.Format("Health: {0}" +
