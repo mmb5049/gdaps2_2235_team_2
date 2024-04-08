@@ -36,7 +36,7 @@ namespace Team2_Mansion_Mayhem
         private const int numberOfWalkingFrames = 4;
         private const int numberOfHurtFrames = 4;
         private const int numberOfDeathFrames = 8;
-        private const float animationSpeed = 1.0f;
+        private const float animationSpeed = 0.2f;
 
         public Ghost(Texture2D texture, Rectangle position, int health, int defense, int damage, int speed) 
             : base(texture, position, health, defense, damage, speed)
@@ -73,6 +73,12 @@ namespace Team2_Mansion_Mayhem
                 case GhostState.Dying:
                     UpdateDyingState(gameTime);
                     break;
+            }
+
+            // Check collision with player
+            if (alive && player.Alive && position.Intersects(player.Location))
+            {
+                player.DamageTaken(damage); // Apply damage to player
             }
         }
 
@@ -132,7 +138,7 @@ namespace Team2_Mansion_Mayhem
             {
                 currentState = GhostState.Normal;
                 invulnerable = false;
-                speed *= 2; // Speed is back to normal
+                speed *= 2; // Speed goes back to normal
             }
         }
 
@@ -148,12 +154,6 @@ namespace Team2_Mansion_Mayhem
                 speed = 0;
                 damage = 0;
                 dyingAnimationCompleted = true;
-            }
-
-            // When the death animation is finished, remove the Ghost
-            if (dyingAnimationCompleted && currentFrame == 0)
-            {
-                // Logic to remove from the game
             }
         }
 
@@ -194,7 +194,7 @@ namespace Team2_Mansion_Mayhem
                 texture,
                 new Vector2((float)position.X, (float)position.Y),
                 sourceRect,
-                spriteColor,
+                Color.White,
                 0,
                 Vector2.Zero,
                 1.0f,
@@ -235,11 +235,11 @@ namespace Team2_Mansion_Mayhem
             if (currentState == GhostState.Normal || currentState == GhostState.Hurt && alive == true)
             {
                 // Calculate direction towards the player
-                float deltaX = playerPosition.X - Position.X;
-                float deltaY = playerPosition.Y - Position.Y;
-                float distance = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
-                float directionX = deltaX / distance;
-                float directionY = deltaY / distance;
+                float deltaX = playerPosition.X - position.X;
+                float deltaY = playerPosition.Center.Y - position.Center.Y;
+                float distance = (float)Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2));
+                float directionX = (float)deltaX / distance;
+                float directionY = (float)deltaY / distance;
 
                 // Calculate the new position
                 int newX = (int)(position.X + directionX * speed);

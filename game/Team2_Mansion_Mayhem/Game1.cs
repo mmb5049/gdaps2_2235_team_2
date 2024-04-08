@@ -159,7 +159,7 @@ namespace Team2_Mansion_Mayhem
             monsterLoc = new Rectangle (200, 200, 64, 53);
             monsterSprite = Content.Load<Texture2D>("Sprites/monsterSpriteSheet");
 
-            ghostLoc = new Rectangle(200, 200, 64, 53);
+            ghostLoc = new Rectangle(200, 200, 64, 64);
             ghostSprite = Content.Load<Texture2D>("Sprites/ghostSpriteSheet");
 
             mapSprite = Content.Load<Texture2D>("Sprites/mapSpriteSheet");
@@ -167,7 +167,7 @@ namespace Team2_Mansion_Mayhem
             obstacles = new Obstacle(mapSprite, windowWidth, windowHeight);
 
             map = new Map(mapSprite, windowWidth, windowHeight);
-            monster = new Monster(monsterSprite,monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
+            monster = new Monster(monsterSprite, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
             ghost = new Ghost(ghostSprite, ghostLoc, ghostHealth, ghostDefense, ghostDamage, ghostSpeed);
             player = new Player(playerSprite, playerLoc, playerHealth, playerDefense, playerDamage, playerSpeed,
                 playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
@@ -205,18 +205,16 @@ namespace Team2_Mansion_Mayhem
                     
                     if (enemies != null)
                     {
-                        foreach (Monster monster in enemies)
+                        foreach (Enemy enemy in enemies)
                         {
-                            monster.Update(gameTime, player);
-                            monster.Chase(player.Location, windowWidth, windowHeight);
-                            monster.ChangeState(gameTime, player.Location);
-                            monster.StartAttack(player.Location);
-                        }
+                            enemy.Update(gameTime, player);
+                            enemy.Chase(player.Location, windowWidth, windowHeight);
 
-                        foreach (Monster ghost in enemies)
-                        {
-                            ghost.Update(gameTime, player);
-                            ghost.Chase(player.Location, windowWidth, windowHeight);
+                            if (enemy is Monster monsterEnemy)
+                            {
+                                monsterEnemy.ChangeState(gameTime, player.Location);
+                                monsterEnemy.StartAttack(player.Location);
+                            }
                         }
 
                         foreach (Projectile projectile in player.Projectiles)
@@ -286,9 +284,10 @@ namespace Team2_Mansion_Mayhem
                 case GameState.Game:
                     map.Draw(_spriteBatch);
                     player.Draw(_spriteBatch, debugEnabled, debugFont);
-                    foreach(Monster monster in enemies)
+
+                    foreach (Enemy enemy in enemies)
                     {
-                        monster.Draw(_spriteBatch, debugEnabled, debugFont);
+                        enemy.Draw(_spriteBatch, debugEnabled, debugFont);
                     }
 
                     /*_spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
@@ -376,9 +375,12 @@ namespace Team2_Mansion_Mayhem
             for (int i = 0; i < totalMonster; i++)
             {
                 monsterLoc = new Rectangle(rng.Next(10, windowWidth - 53), rng.Next(10, windowHeight - 64), 64, 53);
-                monster = new Monster(monsterSprite, monsterLoc, 
-                    monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
+                monster = new Monster(monsterSprite, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
                 enemies.Add(monster);
+
+                ghostLoc = new Rectangle(rng.Next(10, windowWidth - 64), rng.Next(10, windowHeight - 64), 64, 64);
+                ghost = new Ghost(ghostSprite, ghostLoc, ghostHealth, ghostDefense, ghostDamage, ghostSpeed);
+                enemies.Add(ghost);
             }
         }
 
