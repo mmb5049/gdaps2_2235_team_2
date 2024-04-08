@@ -25,10 +25,14 @@ namespace Team2_Mansion_Mayhem
 
     internal class Ghost : Enemy, IDebug
     {
+        private GhostState currentState;
+        private bool damageTaken;
+        private bool invulnerable;
+        private bool hurtAnimationCompleted;
+        private bool dyingAnimationCompleted;
+
         private int currentFrame;
         private float animationTimer;
-        private GhostState currentState;
-
         private const int numberOfWalkingFrames = 4;
         private const int numberOfHurtFrames = 4;
         private const int numberOfDeathFrames = 8;
@@ -44,9 +48,13 @@ namespace Team2_Mansion_Mayhem
             this.damage = damage;
             this.speed = speed;
 
+            currentState = GhostState.Normal;
             currentFrame = 0;
             animationTimer = 0f;
-            currentState = GhostState.Normal;
+            damageTaken = false;
+            invulnerable = false;
+            hurtAnimationCompleted = false;
+            dyingAnimationCompleted = false;
         }
 
         public override void Update(GameTime gameTime, Player player)
@@ -86,14 +94,24 @@ namespace Team2_Mansion_Mayhem
             // Update walking animation
             UpdateAnimation(gameTime, numberOfWalkingFrames);
 
-            // Chase the player disregarding collision detections of obstacles
+            // If damage is taken and health < 1, transition to Hurt state
+            if (damageTaken)
+            {
+                if (health > 0)
+                {
+                    currentState = GhostState.Hurt;
+                    currentFrame = 0;
+                    hurtAnimationCompleted = false;
+                }
+                damageTaken = false;
+            }
 
-            // When damage is taken, go to hurt state
-
-            // When health is 0 or less, transition to dying state
+            // When health is 0 or less, transition to Dying state
             if (health <= 0)
             {
                 currentState = GhostState.Dying;
+                currentFrame = 0;
+                dyingAnimationCompleted = false;
             }
         }
 
@@ -103,11 +121,19 @@ namespace Team2_Mansion_Mayhem
             UpdateAnimation(gameTime, numberOfHurtFrames);
 
             // Ghost becomes invulnerable and speed decreases during hurt animation
+            if (!hurtAnimationCompleted && currentFrame == numberOfHurtFrames - 1)
+            {
+                invulnerable = true;
+                speed /= 2; // Speed decreases in half
+                hurtAnimationCompleted = true;
+            }
 
             // Transition back to normal state after hurt animation is done
-            if (currentFrame == numberOfHurtFrames - 1)
+            if (hurtAnimationCompleted && currentFrame == 0)
             {
                 currentState = GhostState.Normal;
+                invulnerable = false;
+                speed *= 2; // Speed is back to normal
             }
         }
 
@@ -117,12 +143,16 @@ namespace Team2_Mansion_Mayhem
             UpdateAnimation(gameTime, numberOfDeathFrames);
 
             // Stop moving and attacking in dying state
-            Dead();
-            speed = 0;
-            damage = 0;
+            if (!dyingAnimationCompleted && currentFrame == numberOfDeathFrames - 1)
+            {
+                Dead();
+                speed = 0;
+                damage = 0;
+                dyingAnimationCompleted = true;
+            }
 
-            // When the death animation is finished, remove the ghost
-            if (currentFrame == numberOfDeathFrames - 1)
+            // When the death animation is finished, remove the Ghost
+            if (dyingAnimationCompleted && currentFrame == 0)
             {
                 // Logic to remove from the game
             }
@@ -185,7 +215,7 @@ namespace Team2_Mansion_Mayhem
                 currentFrame++;
                 if (currentFrame >= totalFrames)
                 {
-                    currentFrame = 0; // Reset frame if it exceeds total frames (loop animation)
+                    currentFrame = 0; // Reset frame if it exceeds total frames
                 }
                 animationTimer -= animationSpeed;
             }
@@ -193,23 +223,42 @@ namespace Team2_Mansion_Mayhem
 
         public override void DamageTaken(int damage)
         {
-            base.DamageTaken(damage);
+            // Only apply damage if the ghost is not invulnerable
+            if (!invulnerable)
+            {
+                base.DamageTaken(damage);
 
-            // Transition to Hurt state
-            currentState = GhostState.Hurt;
-            currentFrame = 0; // Reset animation frame
+                damageTaken = true;
+            }
+        }
+
+        public override void Chase(Rectangle playerPosition, int windowWidth, int windowHeight)
+        {
+            if (currentState == GhostState.Normal || currentState == GhostState.Hurt && alive == true)
+            {
+                // Calculate direction towards the player
+                float deltaX = playerPosition.X - Position.X;
+                float deltaY = playerPosition.Y - Position.Y;
+                float distance = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+                float directionX = deltaX / distance;
+                float directionY = deltaY / distance;
+
+                // Calculate the new position
+                int newX = (int)(position.X + directionX * speed);
+                int newY = (int)(position.Y + directionY * speed);
+
+                // Check if the new position is within bounds and update position
+                if (newX >= 0 && newX + position.Width <= windowWidth &&
+                    newY >= 0 && newY + position.Height <= windowHeight)
+                {
+                    position = new Rectangle(newX, newY, position.Width, position.Height);
+                }
+            }
         }
 
         public override int Attack()
         {
-            // Ghost can't attack when in hurt or dying state
-            if (currentState == GhostState.Normal)
-            {
-                // Implement attack logic here
-                return damage;
-            }
-
-            // Update when we have the player class
+            // Update later
             return 0;
         }
     }
