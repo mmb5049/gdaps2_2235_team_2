@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
@@ -31,12 +32,36 @@ namespace Team2_Mansion_Mayhem
         private bool hurtAnimationCompleted;
         private bool dyingAnimationCompleted;
 
+        //how long to wait until the enemy can attack again
+        private double damageCooldown = 0.25;
+        private double timeUntilAttack;
+        //how long to wait after being attacked until it can be attacked again
+        private double invulnerableTime = 3;
+        private double timeSinceDamaged;
+        //prevent loss of base speed by using division by ints
+        private int baseSpeed;
+
         private int currentFrame;
         private float animationTimer;
         private const int numberOfWalkingFrames = 4;
         private const int numberOfHurtFrames = 4;
         private const int numberOfDeathFrames = 8;
         private const float animationSpeed = 0.2f;
+
+        public override string DebugStats
+        {
+            //return a list of stats to be printed 
+            get
+            {
+                return
+                 $"State: {currentState}\n" +
+                 $"Health: {health}/{maxHealth} \n " +
+                 $"Defense: {defense} \n " +
+                 $"Damage: {damage}\n " +
+                 $"Position: ({X}, {Y})\n" +
+                 $"Invulnerability: {invulnerable}";
+            }
+        }
 
         public Ghost(Texture2D texture, Rectangle position, int health, int defense, int damage, int speed) 
             : base(texture, position, health, defense, damage, speed)
@@ -46,7 +71,9 @@ namespace Team2_Mansion_Mayhem
             this.maxHealth = health;
             this.health = health;
             this.damage = damage;
+            this.baseSpeed = speed;
             this.speed = speed;
+            this.spriteColor = Color.White;
 
             currentState = GhostState.Normal;
             currentFrame = 0;
@@ -76,10 +103,21 @@ namespace Team2_Mansion_Mayhem
             }
 
             // Check collision with player
-            if (alive && player.Alive && position.Intersects(player.Location) && currentState != GhostState.Dying)
+            if (alive && player.Alive && position.Intersects(player.Location) && currentState != GhostState.Dying && timeUntilAttack == 0)
             {
                 player.DamageTaken(damage); // Apply damage to player
-                player.IsHurt = true; 
+                player.IsHurt = true;
+                timeUntilAttack = damageCooldown;
+            }
+
+            timeSinceDamaged = Math.Max(timeSinceDamaged - gameTime.ElapsedGameTime.TotalSeconds, 0);
+            timeUntilAttack = Math.Max(timeUntilAttack - gameTime.ElapsedGameTime.TotalSeconds, 0);
+            
+            if (timeSinceDamaged == 0 && invulnerable == true)
+            {
+                invulnerable = false;
+                spriteColor = Color.White * 1f;
+                speed = baseSpeed;
             }
         }
 
@@ -126,11 +164,8 @@ namespace Team2_Mansion_Mayhem
             // Update hurt animation
             UpdateAnimation(gameTime, numberOfHurtFrames);
 
-            // Ghost becomes invulnerable and speed decreases during hurt animation
             if (!hurtAnimationCompleted && currentFrame == numberOfHurtFrames - 1)
             {
-                invulnerable = true;
-                speed /= 2; // Speed decreases in half
                 hurtAnimationCompleted = true;
             }
 
@@ -138,8 +173,6 @@ namespace Team2_Mansion_Mayhem
             if (hurtAnimationCompleted && currentFrame == 0)
             {
                 currentState = GhostState.Normal;
-                invulnerable = false;
-                speed *= 2; // Speed goes back to normal
             }
         }
 
@@ -195,7 +228,7 @@ namespace Team2_Mansion_Mayhem
                 texture,
                 new Vector2((float)position.X, (float)position.Y),
                 sourceRect,
-                Color.White,
+                spriteColor,
                 0,
                 Vector2.Zero,
                 1.0f,
@@ -223,9 +256,15 @@ namespace Team2_Mansion_Mayhem
         public override void DamageTaken(int damage)
         {
             // Only apply damage if the ghost is not invulnerable
-            if (!invulnerable)
+            if (!invulnerable && timeSinceDamaged == 0)
             {
                 base.DamageTaken(damage);
+
+                invulnerable = true;
+                speed /= 2; // Speed decreases in half
+                
+                spriteColor = Color.White * 0.5f; //ghost becomes translucent
+                timeSinceDamaged = invulnerableTime;
 
                 damageTaken = true;
             }

@@ -61,6 +61,7 @@ namespace Team2_Mansion_Mayhem
         {
             this.texture = texture;
             this.position = position;
+            this.obstacleBounds = new Rectangle(position.X, position.Y + position.Height / 2, position.Width, position.Height / 2 - 4);
             this.maxHealth = health;
             this.health = health;
             this.damage = damage;
@@ -173,26 +174,30 @@ namespace Team2_Mansion_Mayhem
         {
             if (state != monsterState.AttackLeft && state != monsterState.AttackRight && alive == true) 
             {
-                // Calculate direction towards the player by normalizing a vector
                 float deltaX = playerPosition.X - position.X;
                 float deltaY = playerPosition.Center.Y - position.Center.Y;
-                float distance = (float)Math.Sqrt(Math.Pow(deltaX,2) + Math.Pow(deltaY,2));
+
+                float distance = (float)Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2));
                 float directionX = (float)deltaX / distance;
                 float directionY = (float)deltaY / distance;
 
                 // Calculate the new position
                 int newX = (int)(position.X + directionX * speed);
+
                 int newY = (int)(position.Y + directionY * speed);
 
-                Rectangle newMonsterBounds = new Rectangle(newX, newY, position.Width, position.Height);
-
+                Rectangle newMonsterBoundsX = new Rectangle(newX, position.Y + obstacleBounds.Height, obstacleBounds.Width, obstacleBounds.Height);
+                Rectangle newMonsterBoundsY = new Rectangle(position.X, newY + obstacleBounds.Height, obstacleBounds.Width, obstacleBounds.Height);
                 // Check for collision with each obstacle
                 foreach (Obstacle obstacle in obstacles)
                 {
-                    if (newMonsterBounds.Intersects(obstacle.Position))
+                    if (newMonsterBoundsX.Intersects(obstacle.Position))
                     {
-                        // If there's a collision, don't update the monster's position
-                        return;
+                        newX = position.X;
+                    }
+                    if (newMonsterBoundsY.Intersects(obstacle.Position))
+                    {
+                        newY = position.Y;
                     }
                 }
 

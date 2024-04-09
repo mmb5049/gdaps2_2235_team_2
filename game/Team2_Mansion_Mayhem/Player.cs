@@ -26,6 +26,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         // fields
         private Texture2D spriteSheet;
         private Rectangle location;
+        private Rectangle obstacleBounds;
         private Vector2 resetPoint;
         private playerState state;
         private bool isHurt;
@@ -80,6 +81,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             this.speed = speed;
             this.spriteSheet = spriteSheet;
             this.location = location;
+            this.obstacleBounds = new Rectangle(location.X, location.Y + location.Height/2, location.Width, location.Height/2 - 4);
 
             this.resetPoint.X = location.X;
             this.resetPoint.Y = location.Y;
@@ -270,7 +272,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                     int newX = location.X + speed * movementX;
                     int newY = location.Y + speed * movementY;
 
-                    Rectangle newPlayerBounds = new Rectangle(newX, newY, location.Width, location.Height);
+                    Rectangle newPlayerBounds = new Rectangle(newX, newY + obstacleBounds.Height, obstacleBounds.Width, obstacleBounds.Height);
 
                     foreach (Obstacle obstacle in obstacles)
                     {
@@ -289,6 +291,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                         // Check for collision with each obstacle
                         
                         location.X = newX; // Update X position if within bounds
+                        obstacleBounds.X = newX;
                     }
 
                     if (newY >= -10 && newY + location.Height <= windowHeight)
@@ -296,6 +299,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                         // Check for collision with each obstacle
                         
                         location.Y = newY; // Update Y position if within bounds
+                        obstacleBounds.Y = newY + obstacleBounds.Height;
                     }
 
                 }

@@ -19,6 +19,7 @@ namespace Team2_Mansion_Mayhem
         // fields
         protected Texture2D texture;
         protected Rectangle position;
+        protected Rectangle obstacleBounds;
         protected int health;
         protected int maxHealth;
         protected int defense;
