@@ -58,6 +58,7 @@ namespace Team2_Mansion_Mayhem
             {
                 obs.DrawTable(sb, new Vector2(i * 100, i * 100));
             }
+            obs.DrawPaintings(sb);
         }
     }
 }

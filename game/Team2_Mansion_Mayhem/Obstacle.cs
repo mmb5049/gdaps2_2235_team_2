@@ -20,15 +20,12 @@ namespace Team2_Mansion_Mayhem
         // could be used to determine where certain obstacles go
         protected int windowWidth;
         protected int windowHeight;
-        // keeps track of obstacle positions
-        protected List<Rectangle> obsPos;
 
         public Obstacle(Texture2D spriteSheet, int windowWidth, int windowHeight)
         {
             this.spriteSheet = spriteSheet;
             this.windowWidth = windowWidth;
             this.windowHeight = windowHeight;
-            obsPos = new List<Rectangle>();
         }
 
         // properties
@@ -81,42 +78,21 @@ namespace Team2_Mansion_Mayhem
                 new Vector2(position.X + 32, position.Y + 16),
                 new Rectangle(leftTableOffsetX, tableLegOffsetY, 16, 16),
                 Color.White);
-            obsPos.Add(new Rectangle((int)position.X, (int)position.Y, 48, 24));
         }
 
-        // still unsure how I'd implement collision for these obstacles
-        /*
-        public void CheckCollision(Player p, Enemy e)
+        public void DrawPaintings(SpriteBatch sb)
         {
-            // if a player collides with an obstacle
-            Rectangle preLocation = p.Location;
-            if (this.position.Intersects(p.Location))
+            int paintingYOffset = 16 * 3;
+            int tileRows = windowWidth / 16;
+            for (int i = 0; i < tileRows; i += 2)
             {
-                foreach (Rectangle pos in obsPos)
-                {
-                    if (pos.Intersects(p.Location))
-                    {
-                        p.X -= pos.X * 5;
-                        p.Y -= pos.Y * 5;
-                    }
-                }
+                sb.Draw(
+                    spriteSheet,
+                    new Vector2(i * 16, 0),
+                    new Rectangle(16 * 11, paintingYOffset, 16, 16),
+                    Color.White);
             }
-            // if an enemy collides with an obstacle
-            else if (this.position.Intersects(e.Position))
-            {
-                foreach (Rectangle pos in obsPos)
-                {
-                    if (e.Position.X == pos.X)
-                    {
-                        e.X--;
-                    }
-                    else if (e.Position.Y == pos.Y)
-                    {
-                        e.Y--;
-                    }
-                }
-            }
-        }*/
+        }
 
     }
 }

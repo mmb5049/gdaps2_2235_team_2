@@ -45,7 +45,6 @@ namespace Team2_Mansion_Mayhem
                         new Rectangle(leftEndWallOffsetX, endWallOffsetY, 16, 16),
                         Color.White);
                     // adds the wall to the list to detect collisions
-                    obsPos.Add(new Rectangle((i * 16), 0, 16, 16));
                 }
                 else if(i == tilesRow - 1)
                 {
@@ -54,7 +53,6 @@ namespace Team2_Mansion_Mayhem
                         new Vector2((float)(i * 16), (float)(0)),
                         new Rectangle(rightEndWallOffsetX, endWallOffsetY, 16, 16),
                         Color.White);
-                    obsPos.Add(new Rectangle((i * 16), 0, 16, 16));
                 }
                 else
                 {
@@ -63,7 +61,6 @@ namespace Team2_Mansion_Mayhem
                         new Vector2((float)(i * 16), (float)(0)),
                         new Rectangle(topWallOffsetX, topWallOffsetY, 16, 16),
                         Color.White);
-                    obsPos.Add(new Rectangle((i * 16), 0, 16, 16));
                 }
             }
         }
