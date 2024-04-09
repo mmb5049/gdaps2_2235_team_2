@@ -60,7 +60,7 @@ namespace Team2_Mansion_Mayhem
                 }
             }
             walls.DrawTopWall(sb);
-
+            walls.DrawSideWalls(sb);
             obstacles.Add(walls);
 
             for(int i = 1; i < 4; i++)

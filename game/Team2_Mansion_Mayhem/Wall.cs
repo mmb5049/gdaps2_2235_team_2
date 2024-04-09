@@ -21,8 +21,8 @@ namespace Team2_Mansion_Mayhem
         private int topWallCornerOffsetX = 128;
         private int topWallCornerOffsetY = 32;
         // source for the side walls
-        private int sideWallOffsetX = 128;
-        private int sideWallOffsetY = 16;
+        private int sideWallOffsetX = 16;
+        private int sideWallOffsetY = 128;
 
 
         public Wall(Texture2D spriteSheet, int windowWidth, int windowHeight):base(spriteSheet, windowWidth, windowHeight)
@@ -65,8 +65,33 @@ namespace Team2_Mansion_Mayhem
             }
         }
 
-        
+        public void DrawSideWalls(SpriteBatch sb)
+        {
+            int wallTiles = windowHeight / 16;
+            // draws the wall on the right side of the screen
+            for(int i = 0; i < wallTiles; i++)
+            {
+                sb.Draw(
+                    spriteSheet,
+                    new Vector2((float)(windowWidth - 16), (float)(i * 16)),
+                    new Rectangle(sideWallOffsetX, sideWallOffsetY, 16, 16),
+                    Color.White);
+            }
+            // draws the wall on the left side of the screen
+            for (int i = 0; i < wallTiles; i++)
+            {
+                sb.Draw(
+                    spriteSheet,
+                    new Vector2((float)(0), (float)(i * 16)),
+                    new Rectangle(sideWallOffsetX, sideWallOffsetY, 16, 16),
+                    Color.White,
+                    0,
+                    Vector2.Zero,
+                    1,
+                    SpriteEffects.FlipHorizontally,
+                    0);
+            }
+        }
 
-        
     }
 }

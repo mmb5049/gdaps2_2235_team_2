@@ -84,7 +84,7 @@ namespace Team2_Mansion_Mayhem
                 new Rectangle(leftTableOffsetX, tableLegOffsetY, 16, 16),
                 Color.White);
         }
-
+        // draws paintings on the top wall
         public void DrawPaintings(SpriteBatch sb)
         {
             int paintingYOffset = 16 * 3;

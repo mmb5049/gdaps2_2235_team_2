@@ -241,9 +241,7 @@ namespace Team2_Mansion_Mayhem
                     {
                         NextLevel();
                     }
-                    /* temporary way to move from Game to GameOver 
-                     * if we need to check that state for anything
-                    */
+
                     if (player.Alive == false)
                     {
                         currentState = GameState.GameOver;
@@ -258,7 +256,6 @@ namespace Team2_Mansion_Mayhem
                         ResetGame();
                         player.Reset();
                     }
-                    ResetGame();
                     break;
 
                 default:
@@ -315,6 +312,7 @@ namespace Team2_Mansion_Mayhem
 
                 case GameState.GameOver:
                     _spriteBatch.DrawString(headerFont, "GAME OVER", new Vector2(275, 175), Color.Red);
+                    _spriteBatch.DrawString(headerFont, "Level Reached: " + currentLevel, new Vector2(275, 250), Color.Red);
                     break;
             }
 
