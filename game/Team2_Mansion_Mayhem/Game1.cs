@@ -69,7 +69,7 @@ namespace Team2_Mansion_Mayhem
         private int monsterDefense;
         private string[] monsterData;
 
-        // monster
+        // ghost
         private Ghost ghost;
         private Rectangle ghostLoc;
         private Texture2D ghostSprite;
