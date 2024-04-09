@@ -83,7 +83,8 @@ namespace Team2_Mansion_Mayhem
         // map & obstacles
         private Map map;
         private Texture2D mapSprite;
-        private Obstacle obstacles;
+        private Obstacle obstacle;
+        private List<Obstacle> obstacles;
 
         public Game1()
         {
@@ -139,6 +140,7 @@ namespace Team2_Mansion_Mayhem
                 }
             }
             enemies = new List<Enemy>();
+            obstacles = new List<Obstacle>();
             base.Initialize();
         }
 
@@ -156,15 +158,15 @@ namespace Team2_Mansion_Mayhem
 
             projectileSprite = Content.Load<Texture2D>("Sprites/projectileSpriteSheet");
 
-            monsterLoc = new Rectangle (200, 200, 64, 53);
+            monsterLoc = new Rectangle (200, 200, 32, 53);
             monsterSprite = Content.Load<Texture2D>("Sprites/monsterSpriteSheet");
 
-            ghostLoc = new Rectangle(200, 200, 64, 64);
+            ghostLoc = new Rectangle(200, 200, 32, 32);
             ghostSprite = Content.Load<Texture2D>("Sprites/ghostSpriteSheet");
 
             mapSprite = Content.Load<Texture2D>("Sprites/mapSpriteSheet");
 
-            obstacles = new Obstacle(mapSprite, windowWidth, windowHeight);
+            obstacle = new Obstacle(mapSprite, windowWidth, windowHeight);
 
             map = new Map(mapSprite, windowWidth, windowHeight);
             monster = new Monster(monsterSprite, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
@@ -174,6 +176,7 @@ namespace Team2_Mansion_Mayhem
 
             enemies.Add(monster);
             enemies.Add(ghost);
+            obstacles = map.Obstacles;
         }
         protected override void Update(GameTime gameTime)
         {
@@ -201,14 +204,14 @@ namespace Team2_Mansion_Mayhem
 
                 case GameState.Game:
                     // In game update logic to be added
-                    player.Update(gameTime);
+                    player.Update(gameTime, obstacles);
                     
                     if (enemies != null)
                     {
                         foreach (Enemy enemy in enemies)
                         {
-                            enemy.Update(gameTime, player);
-                            enemy.Chase(player.Location, windowWidth, windowHeight);
+                            enemy.Update(gameTime, player, obstacles);
+                            enemy.Chase(player.Location, windowWidth, windowHeight, obstacles);
 
                             if (enemy is Monster monsterEnemy)
                             {
@@ -374,11 +377,11 @@ namespace Team2_Mansion_Mayhem
 
             for (int i = 0; i < totalMonster; i++)
             {
-                monsterLoc = new Rectangle(rng.Next(10, windowWidth - 53), rng.Next(10, windowHeight - 64), 64, 53);
+                monsterLoc = new Rectangle(rng.Next(10, windowWidth - 53), rng.Next(10, windowHeight - 64), 32, 53);
                 monster = new Monster(monsterSprite, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
                 enemies.Add(monster);
 
-                ghostLoc = new Rectangle(rng.Next(10, windowWidth - 64), rng.Next(10, windowHeight - 64), 64, 64);
+                ghostLoc = new Rectangle(rng.Next(10, windowWidth - 64), rng.Next(10, windowHeight - 64), 32, 30);
                 ghost = new Ghost(ghostSprite, ghostLoc, ghostHealth, ghostDefense, ghostDamage, ghostSpeed);
                 enemies.Add(ghost);
             }

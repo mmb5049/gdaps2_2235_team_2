@@ -57,7 +57,7 @@ namespace Team2_Mansion_Mayhem
             dyingAnimationCompleted = false;
         }
 
-        public override void Update(GameTime gameTime, Player player)
+        public override void Update(GameTime gameTime, Player player, List<Obstacle> obstacles)
         {
             // Update based on the current state
             switch (currentState)
@@ -76,9 +76,10 @@ namespace Team2_Mansion_Mayhem
             }
 
             // Check collision with player
-            if (alive && player.Alive && position.Intersects(player.Location))
+            if (alive && player.Alive && position.Intersects(player.Location) && currentState != GhostState.Dying)
             {
                 player.DamageTaken(damage); // Apply damage to player
+                player.IsHurt = true; 
             }
         }
 
@@ -230,7 +231,7 @@ namespace Team2_Mansion_Mayhem
             }
         }
 
-        public override void Chase(Rectangle playerPosition, int windowWidth, int windowHeight)
+        public override void Chase(Rectangle playerPosition, int windowWidth, int windowHeight, List<Obstacle> obstacles)
         {
             if (currentState == GhostState.Normal || currentState == GhostState.Hurt && alive == true)
             {

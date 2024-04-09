@@ -39,7 +39,12 @@ namespace Team2_Mansion_Mayhem
             get { return this.position.Y; }
             set { this.position.Y = value; }
         }
-        
+
+        public Rectangle Position
+        {
+            get { return position; }
+            set {  position = value; }
+        }
         public void DrawTable(SpriteBatch sb, Vector2 position)
         {
             // variables for the table source rectangles

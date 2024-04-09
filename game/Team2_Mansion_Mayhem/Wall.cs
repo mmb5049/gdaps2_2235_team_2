@@ -44,7 +44,7 @@ namespace Team2_Mansion_Mayhem
                         new Vector2((float)(i * 16), (float)(0)),
                         new Rectangle(leftEndWallOffsetX, endWallOffsetY, 16, 16),
                         Color.White);
-                    // adds the wall to the list to detect collisions
+            // adds the wall to the list to detect collisions
                 }
                 else if(i == tilesRow - 1)
                 {

@@ -92,7 +92,7 @@ namespace Team2_Mansion_Mayhem
         }
 
         //method
-        public override void Update(GameTime gameTime, Player player)
+        public override void Update(GameTime gameTime, Player player, List<Obstacle> obstacles)
         {
             if (alive == true)
             {
@@ -169,7 +169,7 @@ namespace Team2_Mansion_Mayhem
             }
         }
 
-        public override void Chase(Rectangle playerPosition, int windowWidth, int windowHeight)
+        public override void Chase(Rectangle playerPosition, int windowWidth, int windowHeight, List<Obstacle> obstacles)
         {
             if (state != monsterState.AttackLeft && state != monsterState.AttackRight && alive == true) 
             {
@@ -183,6 +183,19 @@ namespace Team2_Mansion_Mayhem
                 // Calculate the new position
                 int newX = (int)(position.X + directionX * speed);
                 int newY = (int)(position.Y + directionY * speed);
+
+                Rectangle newMonsterBounds = new Rectangle(newX, newY, position.Width, position.Height);
+
+                // Check for collision with each obstacle
+                foreach (Obstacle obstacle in obstacles)
+                {
+                    if (newMonsterBounds.Intersects(obstacle.Position))
+                    {
+                        // If there's a collision, don't update the monster's position
+                        return;
+                    }
+                }
+
 
                 // Check if the new position is within bounds
                 if (newX >= 0 && newX + position.Width <= windowWidth &&

@@ -211,7 +211,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             health -= damageIntake;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, List<Obstacle>obtacles)
         {
             kbState = Keyboard.GetState();
             mouseState = Mouse.GetState();
@@ -247,25 +247,16 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 ProcessGetHurt(gameTime);
             }
 
-            ProcessMovement(gameTime, kbState);
+            ProcessMovement(gameTime, kbState, obtacles);
         }
 
-        public void ProcessMovement(GameTime gameTime, KeyboardState kbState)
+        public void ProcessMovement(GameTime gameTime, KeyboardState kbState, List<Obstacle> obstacles)
         {
             int movementX = 0;
             int movementY = 0;
 
             if (isShooting == false)
             {
-                //these evaluate to 1 if the player is moving in a positive direction, 0 if they are holding both keys, and
-                //-1 if the player is moving in a negative direction.
-
-                /*movementX = (Convert.ToInt32(kbState.IsKeyDown(Keys.D)) - Convert.ToInt32(kbState.IsKeyDown(Keys.A)));
-                movementY = (Convert.ToInt32(kbState.IsKeyDown(Keys.S)) - Convert.ToInt32(kbState.IsKeyDown(Keys.W)));
-                location.X += speed * movementX;
-                location.Y += speed * movementY;*/
-
-                if (isShooting == false)
                 {
                     // Store the current location before any movement for bounds checking
                     int oldX = location.X;
@@ -279,19 +270,38 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                     int newX = location.X + speed * movementX;
                     int newY = location.Y + speed * movementY;
 
+                    Rectangle newPlayerBounds = new Rectangle(newX, newY, location.Width, location.Height);
+
+                    foreach (Obstacle obstacle in obstacles)
+                    {
+                        if (newPlayerBounds.Intersects(obstacle.Position))
+                        {
+                            // If there's a collision, don't update the player's position
+                            newX = oldX;
+                            newY = oldY;
+                            break; // No need to check further obstacles
+                        }
+                    }
+
                     // Check if the new position is within the window bounds
                     if (newX >= -10 && newX + location.Width <= windowWidth - 15)
                     {
+                        // Check for collision with each obstacle
+                        
                         location.X = newX; // Update X position if within bounds
                     }
+
                     if (newY >= -10 && newY + location.Height <= windowHeight)
                     {
+                        // Check for collision with each obstacle
+                        
                         location.Y = newY; // Update Y position if within bounds
                     }
+
                 }
 
-                    //the first two evaluate if the player is moving
-                    if (movementX == 1 && !isShooting)
+                //the first two evaluate if the player is moving
+                if (movementX == 1 && !isShooting)
                 {
                     state = playerState.WalkRight;
                 }

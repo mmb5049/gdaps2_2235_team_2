@@ -90,7 +90,7 @@ namespace Team2_Mansion_Mayhem
             }
         }
         //method
-        public abstract void Update(GameTime gameTime, Player player);
+        public abstract void Update(GameTime gameTime, Player player, List<Obstacle> obstacles);
 
         public abstract int Attack();
         public virtual void DamageTaken(int damage)
@@ -103,7 +103,7 @@ namespace Team2_Mansion_Mayhem
             health -= damageTaken;
         }
 
-        public virtual void Chase(Rectangle playerPosition, int windowWidth, int windowHeight)
+        public virtual void Chase(Rectangle playerPosition, int windowWidth, int windowHeight, List<Obstacle> obstacles)
         {
             // Calculate direction towards the player
             float deltaX = playerPosition.X - Position.X;
