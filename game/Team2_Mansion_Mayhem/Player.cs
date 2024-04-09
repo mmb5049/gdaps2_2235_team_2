@@ -260,13 +260,38 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 //these evaluate to 1 if the player is moving in a positive direction, 0 if they are holding both keys, and
                 //-1 if the player is moving in a negative direction.
 
-                movementX = (Convert.ToInt32(kbState.IsKeyDown(Keys.D)) - Convert.ToInt32(kbState.IsKeyDown(Keys.A)));
+                /*movementX = (Convert.ToInt32(kbState.IsKeyDown(Keys.D)) - Convert.ToInt32(kbState.IsKeyDown(Keys.A)));
                 movementY = (Convert.ToInt32(kbState.IsKeyDown(Keys.S)) - Convert.ToInt32(kbState.IsKeyDown(Keys.W)));
                 location.X += speed * movementX;
-                location.Y += speed * movementY;
+                location.Y += speed * movementY;*/
 
-                //the first two evaluate if the player is moving
-                if (movementX == 1 && !isShooting)
+                if (isShooting == false)
+                {
+                    // Store the current location before any movement for bounds checking
+                    int oldX = location.X;
+                    int oldY = location.Y;
+
+                    // Determine movement direction based on keyboard input
+                    movementX = (Convert.ToInt32(kbState.IsKeyDown(Keys.D)) - Convert.ToInt32(kbState.IsKeyDown(Keys.A)));
+                    movementY = (Convert.ToInt32(kbState.IsKeyDown(Keys.S)) - Convert.ToInt32(kbState.IsKeyDown(Keys.W)));
+
+                    // Calculate the new position
+                    int newX = location.X + speed * movementX;
+                    int newY = location.Y + speed * movementY;
+
+                    // Check if the new position is within the window bounds
+                    if (newX >= -10 && newX + location.Width <= windowWidth - 15)
+                    {
+                        location.X = newX; // Update X position if within bounds
+                    }
+                    if (newY >= -10 && newY + location.Height <= windowHeight)
+                    {
+                        location.Y = newY; // Update Y position if within bounds
+                    }
+                }
+
+                    //the first two evaluate if the player is moving
+                    if (movementX == 1 && !isShooting)
                 {
                     state = playerState.WalkRight;
                 }
