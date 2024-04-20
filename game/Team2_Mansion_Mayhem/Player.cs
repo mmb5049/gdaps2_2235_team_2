@@ -65,6 +65,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private int recHeight = 53;
         private int xShift = 0;
         private Color color;
+
         // timing
         private double timer = 0;
         private double shootTimer;
@@ -72,7 +73,8 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private int shootEventFrame = 4;
         // Constructor
         public Player(Texture2D spriteSheet, Rectangle location, int health, int defense, int damage, int speed 
-            ,playerState state, KeyboardState kbState, Texture2D projectileSheet, int windowWidth, int windowHeight)
+            ,playerState state, KeyboardState kbState, Texture2D projectileSheet, int windowWidth, int windowHeight
+            )
         {
             this.health = health;
             this.maxHealth = health;
@@ -93,7 +95,9 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             this.projectileSheet = projectileSheet;
             this.windowWidth = windowWidth;
             this.windowHeight = windowHeight;
+            
         }
+
         // Properties
         public playerState State
         {
@@ -458,6 +462,9 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                     projectile.Draw(sb, debugEnabled, debugFont);
                 }
             }
+
+           
+
             //draw stats under position in the event that debug is enabled
             if (debugEnabled)
             {
@@ -557,6 +564,9 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
 
 
         }
+
+
+
 
         private void ProcessShoot()
         {
