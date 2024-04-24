@@ -377,6 +377,17 @@ namespace Team2_Mansion_Mayhem
             {
                 monsterLoc = new Rectangle(rng.Next(10, windowWidth - 53), rng.Next(10, windowHeight - 64), 32, 53);
                 monster = new Monster(monsterSprite, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
+                
+                // regenerate the monster position so it won't spawn inside an obstacle and got stuck
+                foreach(Obstacle obstacle in obstacles)
+                {
+                    while (monster.Position.Intersects(obstacle.Position))
+                    {
+                        monsterLoc = new Rectangle(rng.Next(10, windowWidth - 53), rng.Next(10, windowHeight - 64), 32, 53);
+                        monster = new Monster(monsterSprite, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
+                    }
+                }
+
                 enemies.Add(monster);
 
                 ghostLoc = new Rectangle(rng.Next(10, windowWidth - 64), rng.Next(10, windowHeight - 64), 32, 30);
