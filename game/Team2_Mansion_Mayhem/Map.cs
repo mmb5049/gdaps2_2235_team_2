@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Team2_Mansion_Mayhem.Content.Sprites;
 
 namespace Team2_Mansion_Mayhem
 {
@@ -71,6 +72,75 @@ namespace Team2_Mansion_Mayhem
                 obs.DrawPaintings(sb);
 
                 obstacles.Add(obs);
+            }
+        }
+
+        public void DisplayHealth(Player p, SpriteBatch sb)
+        {
+            if(p.Health <= 100 && p.Health >= 80)
+            {
+                sb.Draw(
+                    spriteSheet,
+                    new Vector2((float)10, (float)windowHeight - 50), 
+                    new Rectangle(0, 0, 16, 16),
+                    Color.Red,
+                    0,
+                    default,
+                    (float)3, // triple the size of the heart sprite
+                    default,
+                    0);
+            }
+            else if(p.Health < 80 && p.Health >= 60)
+            {
+                sb.Draw(
+                    spriteSheet,
+                    new Vector2((float)10, (float)windowHeight - 50),
+                    new Rectangle(16, 0, 16, 16),
+                    Color.Red,
+                    0,
+                    default,
+                    (float)3, // triple the size of the heart sprite
+                    default,
+                    0);
+            }
+            else if(p.Health < 60 && p.Health >= 40)
+            {
+                sb.Draw(
+                    spriteSheet,
+                    new Vector2((float)10, (float)windowHeight - 50),
+                    new Rectangle(32, 0, 16, 16),
+                    Color.Red,
+                    0,
+                    default,
+                    (float)3, // triple the size of the heart sprite
+                    default,
+                    0);
+            }
+            else if(p.Health < 40 && p.Health >= 20)
+            {
+                sb.Draw(
+                    spriteSheet,
+                    new Vector2((float)10, (float)windowHeight - 50),
+                    new Rectangle(48, 0, 16, 16),
+                    Color.Red,
+                    0,
+                    default,
+                    (float)3, // triple the size of the heart sprite
+                    default,
+                    0);
+            }
+            else // health less than 20
+            {
+                sb.Draw(
+                    spriteSheet,
+                    new Vector2((float)10, (float)windowHeight - 50),
+                    new Rectangle(64, 0, 16, 16),
+                    Color.Red,
+                    0,
+                    default,
+                    (float)3, // triple the size of the heart sprite
+                    default,
+                    0);
             }
         }
     }

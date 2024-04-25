@@ -303,6 +303,7 @@ namespace Team2_Mansion_Mayhem
                         "\nEnemy Count: {2}"
                         , player.Health,currentLevel, enemies.Count), 
                         new Vector2(10,10), Color.White);
+                    map.DisplayHealth(player, _spriteBatch);
                     break;
 
                 case GameState.GameOver:
