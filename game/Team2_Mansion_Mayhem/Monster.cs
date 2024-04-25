@@ -129,20 +129,10 @@ namespace Team2_Mansion_Mayhem
                         break;
                 }
             }
-            
-            if (health < 1)
+            else
             {
                 state = monsterState.Dying;
-                speed = 0;
-                damage = 0;
-
-                UpdateDyingAnimation(gameTime);
-
-                if (!dyingAnimationCompleted && dyingFrame == dyingFrameCount - 1)
-                {
-                    Dead();
-                    dyingAnimationCompleted = true;
-                }
+                UpdateDyingState(gameTime);
             }
         }
 
@@ -183,7 +173,7 @@ namespace Team2_Mansion_Mayhem
 
         public override void Chase(Rectangle playerPosition, int windowWidth, int windowHeight, List<Obstacle> obstacles)
         {
-            if (state != monsterState.AttackLeft && state != monsterState.AttackRight && alive == true) 
+            if (state != monsterState.AttackLeft || state != monsterState.AttackRight || state != monsterState.Dying && alive == true) 
             {
                 float deltaX = playerPosition.X - position.X;
                 float deltaY = playerPosition.Center.Y - position.Center.Y;
@@ -262,20 +252,20 @@ namespace Team2_Mansion_Mayhem
             }
         }
 
-        private void UpdateDyingAnimation(GameTime gameTime)
+        private void UpdateDyingAnimation(GameTime gameTime, int totalFrames)
         {
             // Handle animation timing for dying animation
-            timeCounter += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            timeCounter += gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (timeCounter >= 0.1f)
+            if (timeCounter > timePerFrame)
             {
                 dyingFrame++;
 
-                if (dyingFrame >= dyingFrameCount)
+                if (dyingFrame >= totalFrames)
                 {
                     dyingFrame = 0;
                 }
-                timeCounter -= 0.1f;
+                timeCounter -= timePerFrame;
             }
         }
 
@@ -444,6 +434,23 @@ namespace Team2_Mansion_Mayhem
                     
                     player.IsHurt = true;
                 }
+            }
+        }
+
+        private void UpdateDyingState(GameTime gameTime)
+        {
+            // Update dying animation frames
+            UpdateDyingAnimation(gameTime, dyingFrameCount);
+
+            // Stop movement and attacks during dying animation
+            speed = 0;
+            damage = 0;
+
+            // Check if dying animation completes
+            if (!dyingAnimationCompleted && dyingFrame == dyingFrameCount - 1)
+            {
+                Dead();
+                dyingAnimationCompleted = true;
             }
         }
     }
