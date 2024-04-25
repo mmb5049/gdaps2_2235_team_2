@@ -26,29 +26,32 @@ namespace Team2_Mansion_Mayhem
         WalkRight,
         AttackLeft, 
         AttackRight,
+        Dying
     }
     internal class Monster : Enemy
     {
-        //rage stats
+        // Rage stats
         private bool enraged;
         private double rageThreshold;
         private int ragePower;
         private Color rageColor;
         
-        //states
         private monsterState state;
         private bool canDamage;
         private Rectangle attackRange = new Rectangle();
 
         // Animation
-        private int frame;              // The current animation frame
-        private double timeCounter;     // The amount of time that has passed
+        private int frame;              // Current animation frame
+        private double timeCounter;     // Amount of time that has passed
         private double attackTimeCounter;
-        private double fps;             // The speed of the animation
-        private double timePerFrame;    // The amount of time (in fractional seconds) per frame
+        private double fps;             // Speed of the animation
+        private double timePerFrame;    // Amount of time (in fractional seconds) per frame
         private int attackFrame;
+        private int dyingFrame = 0;
         private int frameCount;
         private int attackFrameCount;
+        private int dyingFrameCount = 6;
+        private bool dyingAnimationCompleted = false;
         private int offSetY;
         private int recWidth = 64;
         private int recHeight = 53;
@@ -56,6 +59,7 @@ namespace Team2_Mansion_Mayhem
         private double timer;
         private double attackTimer;
         private double attackEventFrame = 4;
+
         public Monster(Texture2D texture, Rectangle position, int health, int defense,int damage, int speed, monsterState state) 
             :base(texture, position,health, defense, damage, speed)
         {
@@ -72,7 +76,7 @@ namespace Team2_Mansion_Mayhem
             this.state = state;
             this.alive = true;
 
-            //same for all Monsters.. change me if needed!
+            // Same for all Monsters, change if needed
             this.rageThreshold = 0.5;
             this.ragePower = 2;
             this.rageColor = Color.PaleVioletRed;
@@ -81,7 +85,6 @@ namespace Team2_Mansion_Mayhem
             timePerFrame = 1.0 / fps;
         }
 
-        // properties
         public int attackRangeX
         {
             get { return attackRange.X; }
@@ -92,15 +95,14 @@ namespace Team2_Mansion_Mayhem
             get { return attackRange.Y; }
         }
 
-        //method
         public override void Update(GameTime gameTime, Player player, List<Obstacle> obstacles)
         {
-            if (alive == true)
+            if (health > 0)
             {
                 UpdateAnimation(gameTime);
                 attackTimer = 0.7;
-                //enrage logic.. if at rage threshold and not enraged yet..
-
+                
+                // Enrage logic, if at rage threshold and not enraged yet
                 if (((double)health / maxHealth <= rageThreshold) && !enraged)
                 {
                     damage *= ragePower;
@@ -126,47 +128,56 @@ namespace Team2_Mansion_Mayhem
                         ProcessAttackRight(gameTime, attackTimer, player);
                         break;
                 }
-
-                if (!alive)
-                {
-                    position.X = 0;
-                    position.Y = 0;
-                }
-                Dead();
             }
-           
+            
+            if (health < 1)
+            {
+                state = monsterState.Dying;
+                speed = 0;
+                damage = 0;
+
+                UpdateDyingAnimation(gameTime);
+
+                if (!dyingAnimationCompleted && dyingFrame == dyingFrameCount - 1)
+                {
+                    Dead();
+                    dyingAnimationCompleted = true;
+                }
+            }
         }
+
         public override void Draw(SpriteBatch sb, bool debugEnabled, SpriteFont debugFont)
         {
-            if (alive == true)
+            switch (state)
             {
-                switch(state) 
-                {
-                    case monsterState.WalkRight:
-                        DrawWalking(sb, SpriteEffects.None); 
-                        break;
+                case monsterState.WalkRight:
+                    DrawWalking(sb, SpriteEffects.None);
+                    break;
 
-                    case monsterState.WalkLeft:
-                        DrawWalking(sb, SpriteEffects.FlipHorizontally);
-                        break;
+                case monsterState.WalkLeft:
+                    DrawWalking(sb, SpriteEffects.FlipHorizontally);
+                    break;
 
-                    case monsterState.AttackLeft:
-                        xShift = 50;
-                        DrawAttackingLeft(sb, SpriteEffects.None);
-                        break;
+                case monsterState.AttackLeft:
+                    xShift = 50;
+                    DrawAttackingLeft(sb, SpriteEffects.None);
+                    break;
 
-                    case monsterState.AttackRight:
-                        xShift = 64;
-                        DrawAttackingRight(sb, SpriteEffects.None);
-                        break;
-                }
+                case monsterState.AttackRight:
+                    xShift = 64;
+                    DrawAttackingRight(sb, SpriteEffects.None);
+                    break;
 
-                //draw stats under position in the event that debug is enabled
-                if (debugEnabled)
-                {
-                    sb.DrawString(debugFont, DebugStats,
-                    new Vector2(X, Y + position.Height), Color.Black);
-                }
+                case monsterState.Dying:
+                    DrawDying(sb, SpriteEffects.None);
+                    break;
+            }
+
+            // Draw stats under position in the event that debug is enabled
+            if (debugEnabled)
+            {
+                sb.DrawString(debugFont, DebugStats,
+                new Vector2(X, Y + position.Height), Color.Black);
             }
         }
 
@@ -183,11 +194,11 @@ namespace Team2_Mansion_Mayhem
 
                 // Calculate the new position
                 int newX = (int)(position.X + directionX * speed);
-
                 int newY = (int)(position.Y + directionY * speed);
 
                 Rectangle newMonsterBoundsX = new Rectangle(newX, position.Y + obstacleBounds.Height, obstacleBounds.Width, obstacleBounds.Height);
                 Rectangle newMonsterBoundsY = new Rectangle(position.X, newY + obstacleBounds.Height, obstacleBounds.Width, obstacleBounds.Height);
+                
                 // Check for collision with each obstacle
                 foreach (Obstacle obstacle in obstacles)
                 {
@@ -201,10 +212,8 @@ namespace Team2_Mansion_Mayhem
                     }
                 }
 
-
                 // Check if the new position is within bounds
-                if (newX >= 0 && newX + position.Width <= windowWidth &&
-                    newY >= 0 && newY + position.Height <= windowHeight)
+                if (newX >= 0 && newX + position.Width <= windowWidth && newY >= 0 && newY + position.Height <= windowHeight)
                 {
                     // Update enemy position
                     position = new Rectangle(newX, newY, position.Width, position.Height);
@@ -213,57 +222,70 @@ namespace Team2_Mansion_Mayhem
         }
         public override int Attack()
         {
-            //update me with like.. actual code later!
-            // no need to use this yet
+            // No need to use this yet
             return 0;
         }
 
         public void UpdateAnimation(GameTime gameTime)
         {
             // Handle animation timing
-
-
             // How much time has passed 
             timeCounter += gameTime.ElapsedGameTime.TotalSeconds;
 
             // If enough time has passed:
             if (timeCounter >= timePerFrame)
             {
-                frame += 1;                     // Adjust the frame to the next image
+                frame += 1; // Adjust the frame to the next image
 
-                if (frame > frameCount)     // Check the bounds 
+                if (frame > frameCount) // Check the bounds 
                     frame = 1;
 
-                timeCounter -= timePerFrame;    // Remove the time we "used" 
+                timeCounter -= timePerFrame; // Remove the time we "used" 
             }
         }
 
-        public void UpdateAttackAnimation(GameTime gameTime) // different method to handle shoot animation
+        public void UpdateAttackAnimation(GameTime gameTime)
         {
             // Handle animation timing
-
-
             // How much time has passed 
             attackTimeCounter += gameTime.ElapsedGameTime.TotalSeconds;
 
             // If enough time has passed:
             if (attackTimeCounter >= timePerFrame)
             {
-                attackFrame += 1;                     // Adjust the frame to the next image
+                attackFrame += 1; // Adjust the frame to the next image
 
-                if (attackFrame > attackFrameCount)     // Check the bounds 
+                if (attackFrame > attackFrameCount) // Check the bounds 
                     attackFrame = 1;
 
-                attackTimeCounter -= timePerFrame;    // Remove the time we "used" 
+                attackTimeCounter -= timePerFrame; // Remove the time we "used" 
             }
         }
+
+        private void UpdateDyingAnimation(GameTime gameTime)
+        {
+            // Handle animation timing for dying animation
+            timeCounter += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (timeCounter >= 0.1f)
+            {
+                dyingFrame++;
+
+                if (dyingFrame >= dyingFrameCount)
+                {
+                    dyingFrame = 0;
+                }
+                timeCounter -= 0.1f;
+            }
+        }
+
         private void DrawWalking(SpriteBatch sb, SpriteEffects flipSprite)
         {
-            // draw walking animation
             recWidth = 64;
             recHeight = 53;
             offSetY = 714;
             frameCount = 8;
+
             sb.Draw(
                 texture,
                 new Vector2((float)position.X, (float)position.Y),
@@ -285,8 +307,8 @@ namespace Team2_Mansion_Mayhem
             recWidth = 192;
             recHeight = 53;
             offSetY = 1994;
-
             attackFrameCount = 5;
+
             sb.Draw(
                 texture,
                 new Vector2((float)position.X, (float)position.Y),
@@ -308,13 +330,35 @@ namespace Team2_Mansion_Mayhem
             recWidth = 192;
             recHeight = 53;
             offSetY = 1609;
-
             attackFrameCount = 5;
+
             sb.Draw(
                 texture,
                 new Vector2((float)position.X, (float)position.Y),
                 new Rectangle(
                     (attackFrame * recWidth) + xShift,
+                    offSetY,
+                    recWidth,
+                    recHeight),
+                spriteColor,
+                0,
+                Vector2.Zero,
+                1.0f,
+                flipSprite,
+                0);
+        }
+
+        private void DrawDying(SpriteBatch sb, SpriteEffects flipSprite)
+        {
+            recWidth = 66;
+            recHeight = 53;
+            offSetY = 1285;
+
+            sb.Draw(
+                texture,
+                new Vector2((float)position.X, (float)position.Y),
+                new Rectangle(
+                    (dyingFrame * recWidth),
                     offSetY,
                     recWidth,
                     recHeight),
@@ -401,8 +445,6 @@ namespace Team2_Mansion_Mayhem
                     player.IsHurt = true;
                 }
             }
-            
         }
-
-    }//end of class 
+    }
 }
