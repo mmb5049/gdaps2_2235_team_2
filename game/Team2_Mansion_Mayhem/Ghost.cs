@@ -32,13 +32,10 @@ namespace Team2_Mansion_Mayhem
         private bool hurtAnimationCompleted;
         private bool dyingAnimationCompleted;
 
-        //how long to wait until the enemy can attack again
         private double damageCooldown = 0.25;
         private double timeUntilAttack;
-        //how long to wait after being attacked until it can be attacked again
         private double invulnerableTime = 3;
         private double timeSinceDamaged;
-        //prevent loss of base speed by using division by ints
         private int baseSpeed;
 
         private int currentFrame;
@@ -50,7 +47,7 @@ namespace Team2_Mansion_Mayhem
 
         public override string DebugStats
         {
-            //return a list of stats to be printed 
+            // Return a list of stats to be printed 
             get
             {
                 return
@@ -195,24 +192,20 @@ namespace Team2_Mansion_Mayhem
         {
             int recSize = 32;
             int offsetY = 0;
-            int frameCount = 0;
 
             // Draw Ghost animation based on current state
             switch (currentState)
             {
                 case GhostState.Normal:
                     offsetY = 0;
-                    frameCount = numberOfWalkingFrames;
                     break;
 
                 case GhostState.Hurt:
                     offsetY = 32;
-                    frameCount = numberOfHurtFrames;
                     break;
 
                 case GhostState.Dying:
                     offsetY = 64;
-                    frameCount = numberOfDeathFrames;
                     break;
             }
 
@@ -263,7 +256,7 @@ namespace Team2_Mansion_Mayhem
                 invulnerable = true;
                 speed /= 2; // Speed decreases in half
                 
-                spriteColor = Color.White * 0.5f; //ghost becomes translucent
+                spriteColor = Color.White * 0.5f; // Ghost becomes translucent
                 timeSinceDamaged = invulnerableTime;
 
                 damageTaken = true;
