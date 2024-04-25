@@ -160,7 +160,6 @@ namespace Team2_Mansion_Mayhem
                     break;
 
                 case monsterState.Dying:
-                    System.Diagnostics.Debug.WriteLine("hi");
                     DrawDying(sb, SpriteEffects.None);
                     break;
             }
