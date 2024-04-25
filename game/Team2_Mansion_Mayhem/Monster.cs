@@ -59,7 +59,7 @@ namespace Team2_Mansion_Mayhem
         private double timer;
         private double attackTimer;
         private double attackEventFrame = 4;
-
+        private double dyingTimeCounter;
         public Monster(Texture2D texture, Rectangle position, int health, int defense,int damage, int speed, monsterState state) 
             :base(texture, position,health, defense, damage, speed)
         {
@@ -94,7 +94,10 @@ namespace Team2_Mansion_Mayhem
         {
             get { return attackRange.Y; }
         }
-
+        public monsterState State
+        {
+            get { return state; }   
+        }
         public override void Update(GameTime gameTime, Player player, List<Obstacle> obstacles)
         {
             if (health > 0)
@@ -103,7 +106,7 @@ namespace Team2_Mansion_Mayhem
                 attackTimer = 0.7;
                 
                 // Enrage logic, if at rage threshold and not enraged yet
-                if (((double)health / maxHealth <= rageThreshold) && !enraged)
+                if (((double)health / maxHealth <= rageThreshold) && !enraged && state != monsterState.Dying)
                 {
                     damage *= ragePower;
                     speed *= ragePower;
@@ -132,7 +135,13 @@ namespace Team2_Mansion_Mayhem
             else
             {
                 state = monsterState.Dying;
-                UpdateDyingState(gameTime);
+                switch (state)
+                {
+                    case monsterState.Dying:
+                        UpdateDyingState(gameTime);
+                        break;
+                }
+                
             }
         }
 
@@ -252,20 +261,20 @@ namespace Team2_Mansion_Mayhem
             }
         }
 
-        private void UpdateDyingAnimation(GameTime gameTime, int totalFrames)
+        private void UpdateDyingAnimation(GameTime gameTime)
         {
             // Handle animation timing for dying animation
-            timeCounter += gameTime.ElapsedGameTime.TotalSeconds;
+            dyingTimeCounter += gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (timeCounter > timePerFrame)
+            if (dyingTimeCounter > timePerFrame)
             {
-                dyingFrame++;
+                dyingFrame += 1;
 
-                if (dyingFrame >= totalFrames)
+                if (dyingFrame >= dyingFrameCount)
                 {
-                    dyingFrame = 0;
+                    dyingFrame = 1;
                 }
-                timeCounter -= timePerFrame;
+                dyingTimeCounter -= timePerFrame;
             }
         }
 
@@ -340,9 +349,10 @@ namespace Team2_Mansion_Mayhem
 
         private void DrawDying(SpriteBatch sb, SpriteEffects flipSprite)
         {
-            recWidth = 66;
+            recWidth = 64;
             recHeight = 53;
             offSetY = 1285;
+            dyingFrameCount = 5;
 
             sb.Draw(
                 texture,
@@ -362,11 +372,11 @@ namespace Team2_Mansion_Mayhem
 
         public void ChangeState(GameTime gameTime, Rectangle playerLoc)
         {
-            if (playerLoc.X > position.X)
+            if (playerLoc.X > position.X && state != monsterState.Dying)
             {
                 state = monsterState.WalkRight;
             }
-            else if (playerLoc.X < position.X)
+            else if (playerLoc.X < position.X && state != monsterState.Dying)
             {
                 state = monsterState.WalkLeft;
             }
@@ -440,7 +450,7 @@ namespace Team2_Mansion_Mayhem
         private void UpdateDyingState(GameTime gameTime)
         {
             // Update dying animation frames
-            UpdateDyingAnimation(gameTime, dyingFrameCount);
+            UpdateDyingAnimation(gameTime);
 
             // Stop movement and attacks during dying animation
             speed = 0;

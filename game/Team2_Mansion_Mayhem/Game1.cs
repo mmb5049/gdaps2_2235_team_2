@@ -293,13 +293,8 @@ namespace Team2_Mansion_Mayhem
                     /*_spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
                         new Vector2(10, 10), Color.White);
                     _spriteBatch.DrawString
-                        (debugFont, string.Format("Timer: {0} \nDamageTaken:{1}" +
-                        "\nDefense: {2}\nMonster position: {3},{4}" +
-                        "\nMonster Data: {5}, {6}, {7}, {8}, {9}" +
-                        "\nAttack Range: {10} {11}", 
-                        player.Timer, player.DamageIntake, player.Defense, monster.X, monster.Y, 
-                        monster.Health, monster.Defense, monster.Damage, monster.Speed, monster.Alive,
-                        monster.attackRangeX, monster.attackRangeY),
+                        (debugFont, string.Format("{0},", monster.State) 
+                        ,
                         new Vector2(300, 10), Color.White);*/
 
                     _spriteBatch.DrawString(normalFont, 
@@ -372,7 +367,7 @@ namespace Team2_Mansion_Mayhem
             int baseMonster = 1;
             int extraMonster = 1;
             int totalMonster = baseMonster + (extraMonster * (currentLevel) / 2); // increase enemy per 2 levels
-
+            
             for (int i = 0; i < totalMonster; i++)
             {
                 monsterLoc = new Rectangle(rng.Next(10, windowWidth - 53), rng.Next(10, windowHeight - 64), 32, 53);
