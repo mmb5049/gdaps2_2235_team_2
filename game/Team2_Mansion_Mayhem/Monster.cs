@@ -147,6 +147,7 @@ namespace Team2_Mansion_Mayhem
 
         public override void Draw(SpriteBatch sb, bool debugEnabled, SpriteFont debugFont)
         {
+            System.Diagnostics.Debug.WriteLine(state);
             switch (state)
             {
                 case monsterState.WalkRight:
@@ -266,7 +267,7 @@ namespace Team2_Mansion_Mayhem
             // Handle animation timing for dying animation
             dyingTimeCounter += gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (dyingTimeCounter > timePerFrame)
+            if (dyingTimeCounter >= timePerFrame)
             {
                 dyingFrame += 1;
 
@@ -372,13 +373,20 @@ namespace Team2_Mansion_Mayhem
 
         public void ChangeState(GameTime gameTime, Rectangle playerLoc)
         {
-            if (playerLoc.X > position.X && state != monsterState.Dying)
+            if (health > 0)
             {
-                state = monsterState.WalkRight;
+                if (playerLoc.X > position.X && state != monsterState.Dying)
+                {
+                    state = monsterState.WalkRight;
+                }
+                else if (playerLoc.X < position.X && state != monsterState.Dying)
+                {
+                    state = monsterState.WalkLeft;
+                }
             }
-            else if (playerLoc.X < position.X && state != monsterState.Dying)
+            else
             {
-                state = monsterState.WalkLeft;
+                state = monsterState.Dying;
             }
         }
 
