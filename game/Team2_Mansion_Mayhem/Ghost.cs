@@ -60,8 +60,8 @@ namespace Team2_Mansion_Mayhem
             }
         }
 
-        public Ghost(Texture2D texture, Rectangle position, int health, int defense, int damage, int speed) 
-            : base(texture, position, health, defense, damage, speed)
+        public Ghost(Texture2D texture, Texture2D healthbar, Rectangle position, int health, int defense, int damage, int speed) 
+            : base(texture, healthbar, position, health, defense, damage, speed)
         {
             this.texture = texture;
             this.position = position;
@@ -71,6 +71,7 @@ namespace Team2_Mansion_Mayhem
             this.baseSpeed = speed;
             this.speed = speed;
             this.spriteColor = Color.White;
+            this.healthbar = healthbar;
 
             currentState = GhostState.Normal;
             currentFrame = 0;
@@ -122,6 +123,12 @@ namespace Team2_Mansion_Mayhem
         {
             // Draw the Ghost animation
             DrawGhostAnimation(spriteBatch, SpriteEffects.None);
+
+            //draw the healthbar background
+            spriteBatch.Draw(healthbar, new Rectangle(position.X - position.Width/2, position.Y - position.Width + 5, 75, 15), new Rectangle(0, 0, 75, 15), Color.White);
+
+            //draw the healthbar foreground
+            spriteBatch.Draw(healthbar, new Rectangle(position.X - position.Width/2, position.Y - position.Width + 5, (int)Math.Round((double)75 * ((double)health / (double)maxHealth)), 15), new Rectangle(0, 15, (int)Math.Round((double)75 * ((double)health / (double)maxHealth)), 15), Color.Red);
 
             // Draw stats under position in the event that debug is enabled
             if (debugEnabled)

@@ -45,6 +45,7 @@ namespace Team2_Mansion_Mayhem
         private Texture2D mainMenuBackground;
         private Texture2D title;
         private Texture2D gameOver;
+        private Texture2D enemyHP;
 
         // player
         private Player player;
@@ -172,11 +173,13 @@ namespace Team2_Mansion_Mayhem
 
             mapSprite = Content.Load<Texture2D>("Sprites/mapSpriteSheet");
 
+            enemyHP = Content.Load<Texture2D>("Sprites/enemyhealthbars");
+
             obstacle = new Obstacle(mapSprite, windowWidth, windowHeight);
 
             map = new Map(mapSprite, windowWidth, windowHeight);
-            monster = new Monster(monsterSprite, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
-            ghost = new Ghost(ghostSprite, ghostLoc, ghostHealth, ghostDefense, ghostDamage, ghostSpeed);
+            monster = new Monster(monsterSprite, enemyHP, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
+            ghost = new Ghost(ghostSprite, enemyHP, ghostLoc, ghostHealth, ghostDefense, ghostDamage, ghostSpeed);
             player = new Player(playerSprite, playerLoc, playerHealth, playerDefense, playerDamage, playerSpeed,
                 playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
 
@@ -381,7 +384,7 @@ namespace Team2_Mansion_Mayhem
             for (int i = 0; i < totalMonster; i++)
             {
                 monsterLoc = new Rectangle(rng.Next(10, windowWidth - 53), rng.Next(10, windowHeight - 64), 32, 53);
-                monster = new Monster(monsterSprite, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
+                monster = new Monster(monsterSprite, enemyHP, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
                 
                 // regenerate the monster position so it won't spawn inside an obstacle and got stuck
                 foreach(Obstacle obstacle in obstacles)
@@ -389,14 +392,14 @@ namespace Team2_Mansion_Mayhem
                     while (monster.Position.Intersects(obstacle.Position))
                     {
                         monsterLoc = new Rectangle(rng.Next(10, windowWidth - 53), rng.Next(10, windowHeight - 64), 32, 53);
-                        monster = new Monster(monsterSprite, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
+                        monster = new Monster(monsterSprite, enemyHP, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
                     }
                 }
 
                 enemies.Add(monster);
 
                 ghostLoc = new Rectangle(rng.Next(10, windowWidth - 64), rng.Next(10, windowHeight - 64), 32, 30);
-                ghost = new Ghost(ghostSprite, ghostLoc, ghostHealth, ghostDefense, ghostDamage, ghostSpeed);
+                ghost = new Ghost(ghostSprite, enemyHP, ghostLoc, ghostHealth, ghostDefense, ghostDamage, ghostSpeed);
                 enemies.Add(ghost);
             }
         }

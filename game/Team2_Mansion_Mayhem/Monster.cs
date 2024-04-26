@@ -60,8 +60,9 @@ namespace Team2_Mansion_Mayhem
         private double attackTimer;
         private double attackEventFrame = 4;
         private double dyingTimeCounter;
-        public Monster(Texture2D texture, Rectangle position, int health, int defense,int damage, int speed, monsterState state) 
-            :base(texture, position,health, defense, damage, speed)
+
+        public Monster(Texture2D texture, Texture2D healthTexture, Rectangle position, int health, int defense,int damage, int speed, monsterState state) 
+            :base(texture, healthTexture, position,health, defense, damage, speed)
         {
             this.texture = texture;
             this.position = position;
@@ -72,6 +73,7 @@ namespace Team2_Mansion_Mayhem
             this.speed = speed;
             this.enraged = false;
             this.spriteColor = Color.White;
+            this.healthbar = healthTexture;
 
             this.state = state;
             this.alive = true;
@@ -146,8 +148,7 @@ namespace Team2_Mansion_Mayhem
         }
 
         public override void Draw(SpriteBatch sb, bool debugEnabled, SpriteFont debugFont)
-        {
-            System.Diagnostics.Debug.WriteLine(state);
+        { 
             switch (state)
             {
                 case monsterState.WalkRight:
@@ -173,12 +174,20 @@ namespace Team2_Mansion_Mayhem
                     break;
             }
 
+            //draw the healthbar background
+            sb.Draw(healthbar, new Rectangle(position.X, position.Y - position.Width + 5, 75, 15), new Rectangle(0, 0, 75, 15), Color.White);
+
+            //draw the healthbar foreground
+            sb.Draw(healthbar, new Rectangle(position.X, position.Y - position.Width + 5, (int)Math.Round((double)75 * ((double)health / (double)maxHealth)), 15), new Rectangle(0, 15, (int)Math.Round((double)75 * ((double)health/(double)maxHealth)), 15), Color.Red);
+
             // Draw stats under position in the event that debug is enabled
             if (debugEnabled)
             {
                 sb.DrawString(debugFont, DebugStats,
                 new Vector2(X, Y + position.Height), Color.Black);
             }
+
+
         }
 
         public override void Chase(Rectangle playerPosition, int windowWidth, int windowHeight, List<Obstacle> obstacles)

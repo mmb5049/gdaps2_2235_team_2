@@ -18,6 +18,7 @@ namespace Team2_Mansion_Mayhem
     {
         // fields
         protected Texture2D texture;
+        protected Texture2D healthbar;
         protected Rectangle position;
         protected Rectangle obstacleBounds;
         protected int health;
@@ -29,7 +30,7 @@ namespace Team2_Mansion_Mayhem
         protected Color spriteColor;
 
         // constructor
-        public Enemy(Texture2D texture, Rectangle position, int health, int defense, int damage, int speed)
+        public Enemy(Texture2D texture, Texture2D healthTexture, Rectangle position, int health, int defense, int damage, int speed)
         {
             this.texture = texture;
             this.position = position;
