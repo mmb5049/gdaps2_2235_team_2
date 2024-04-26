@@ -42,7 +42,9 @@ namespace Team2_Mansion_Mayhem
         //misc
         private int windowHeight;
         private int windowWidth;
-
+        private Texture2D mainMenuBackground;
+        private Texture2D title;
+        private Texture2D gameOver;
 
         // player
         private Player player;
@@ -151,6 +153,10 @@ namespace Team2_Mansion_Mayhem
             debugFont = Content.Load<SpriteFont>("Fonts/Debugfont");
             headerFont = Content.Load<SpriteFont>("Fonts/Header");
             normalFont = Content.Load<SpriteFont>("Fonts/normalFont");
+
+            mainMenuBackground = Content.Load<Texture2D>("Screen/mainMenuBackground");
+            title = Content.Load<Texture2D>("Screen/title");
+            gameOver = Content.Load<Texture2D>("Screen/gameOver");
 
             // Load sprites
             playerLoc = new Rectangle(50, 50, 22, 49);
@@ -275,10 +281,12 @@ namespace Team2_Mansion_Mayhem
             switch (currentState)
             {
                 case GameState.MainMenu:
-                    _spriteBatch.DrawString(headerFont, "Mansion Mayhem", new Vector2(275, 175), Color.Red);
+                    _spriteBatch.Draw(mainMenuBackground, Vector2.Zero, Color.White);
+                    _spriteBatch.Draw(title, new Vector2(100, 100), Color.White);
                     _spriteBatch.DrawString(normalFont, 
-                        "Instruction: \nMove: WASD \nShoot : Mouse \nStartGame: Space",
-                        new Vector2(175, 250), Color.White);
+                        "Kill supernatural creatures to get to the farthest wave!" +
+                        "\nMove: WASD \nShoot : Mouse \nStart Game: Space",
+                        new Vector2(110, 255), Color.White);
                     break;
 
                 case GameState.Game:
@@ -307,8 +315,9 @@ namespace Team2_Mansion_Mayhem
                     break;
 
                 case GameState.GameOver:
-                    _spriteBatch.DrawString(headerFont, "GAME OVER", new Vector2(275, 175), Color.Red);
-                    _spriteBatch.DrawString(headerFont, "Level Reached: " + currentLevel, new Vector2(275, 250), Color.Red);
+                    _spriteBatch.Draw(mainMenuBackground, Vector2.Zero, Color.White);
+                    _spriteBatch.Draw(gameOver, new Vector2(220, 110), Color.White);
+                    _spriteBatch.DrawString(headerFont, "Level Reached: " + currentLevel, new Vector2(275, 270), Color.Red);
                     break;
             }
 
