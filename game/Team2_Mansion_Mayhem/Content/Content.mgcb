@@ -70,7 +70,7 @@
 /processorParam:TextureFormat=Color
 /build:Screen/title.png
 
-#begin Sprites/dashUI.png
+#begin Sprites/abilitiesUI.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -80,7 +80,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/dashUI.png
+/build:Sprites/abilitiesUI.png
 
 #begin Sprites/enemyhealthbars.png
 /importer:TextureImporter

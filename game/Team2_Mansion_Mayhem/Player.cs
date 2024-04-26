@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
@@ -19,12 +20,14 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         WalkRight,
         ShootingLeft,
         ShootingRight,
+        Dashing
     }
 
     internal class Player : IDebug
     {
         // fields
         private Texture2D spriteSheet;
+        private Texture2D abilities;
         private Rectangle location;
         private Rectangle obstacleBounds;
         private Vector2 resetPoint;
@@ -45,7 +48,22 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private int defense;
         private int damage;
         private bool alive = true;
+        private bool invincible = false;
         private int damageIntake = 0;
+
+        // abilities
+        private double dashAbilityProgress = 0;
+        private double dashAbilityCooldown = 1;
+        private playerState dashState;
+        private int dashX;
+        private int dashY;
+
+        private double dashProgress = 0;
+        private double dashTimer = 0.2;
+
+
+        private double screamAbilityProgress = 0;
+        private double screamAbilityCooldown = 10;
 
         // projectile
         private double lookAngle;
@@ -71,8 +89,11 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private double shootTimer;
         private double hurtTimer = 0;
         private int shootEventFrame = 4;
+
+        private Random rng = new Random();
+
         // Constructor
-        public Player(Texture2D spriteSheet, Rectangle location, int health, int defense, int damage, int speed 
+        public Player(Texture2D spriteSheet, Texture2D abilitySheet, Rectangle location, int health, int defense, int damage, int speed 
             ,playerState state, KeyboardState kbState, Texture2D projectileSheet, int windowWidth, int windowHeight
             )
         {
@@ -84,6 +105,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             this.spriteSheet = spriteSheet;
             this.location = location;
             this.obstacleBounds = new Rectangle(location.X, location.Y + location.Height/2, location.Width, location.Height/2 - 4);
+            this.abilities = abilitySheet;
 
             this.resetPoint.X = location.X;
             this.resetPoint.Y = location.Y;
@@ -207,14 +229,17 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
 
         public void DamageTaken(int damage)
         {
-            damageIntake = damage - defense;
-
-            if (damageIntake < 0) // avoid taking negative damage
+            if (!invincible)
             {
-                damageIntake = 0;
-            }
+                damageIntake = damage - defense;
 
-            health -= damageIntake;
+                if (damageIntake < 0) // avoid taking negative damage
+                {
+                    damageIntake = 0;
+                }
+
+                health -= damageIntake;
+            }
         }
 
         public void Update(GameTime gameTime, List<Obstacle>obtacles)
@@ -224,6 +249,32 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             lookAngle = UpdateAngle();
             shootTimer = .7;
             UpdateAnimation(gameTime);
+            UpdateAbilites(gameTime);
+
+            if ((mouseState.RightButton == ButtonState.Pressed) && dashAbilityProgress == 1)
+            {
+                // Determine movement direction based on keyboard input
+                dashX = (Convert.ToInt32(kbState.IsKeyDown(Keys.D)) - Convert.ToInt32(kbState.IsKeyDown(Keys.A)));
+                dashY = (Convert.ToInt32(kbState.IsKeyDown(Keys.S)) - Convert.ToInt32(kbState.IsKeyDown(Keys.W)));
+
+                //failsafe to ensure the plauer dashes in some direction
+                if (dashX == 0)
+                {
+                    if (state == playerState.FaceLeft)
+                    {
+                        dashX = -1;
+                    }
+                    else
+                    {
+                        dashX = 1;
+                    }
+                }
+
+                dashProgress = dashTimer;
+                dashState = state;
+                state = playerState.Dashing;
+                invincible = true;
+            }
 
             if (health < 1)
             {
@@ -253,7 +304,22 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 ProcessGetHurt(gameTime);
             }
 
-            ProcessMovement(gameTime, kbState, obtacles);
+
+            //dash if dashing, else move normally
+            if (dashProgress > 0)
+            {
+                ProcessDash(gameTime, dashX, dashY, obtacles);
+            }
+            else
+            {
+                ProcessMovement(gameTime, kbState, obtacles);
+            }
+            
+
+            if (kbState.IsKeyDown(Keys.E) && screamAbilityProgress == 1)
+            {
+                ProcessScream();
+            }
         }
 
         public void ProcessMovement(GameTime gameTime, KeyboardState kbState, List<Obstacle> obstacles)
@@ -379,6 +445,52 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             }
         }
 
+        private void ProcessDash(GameTime gameTime,int movementX, int movementY, List<Obstacle> obstacles)
+        {
+            dashAbilityProgress = 0;
+            // Store the current location before any movement for bounds checking
+            int oldX = location.X;
+            int oldY = location.Y;
+
+            // Calculate the new position
+            int newX = location.X + (speed * 2) * movementX;
+            int newY = location.Y + (speed * 2) * movementY;
+
+            Rectangle newPlayerBounds = new Rectangle(newX, newY + obstacleBounds.Height, obstacleBounds.Width, obstacleBounds.Height);
+
+            foreach (Obstacle obstacle in obstacles)
+            {
+                if (newPlayerBounds.Intersects(obstacle.Position))
+                {
+                    // If there's a collision, don't update the player's position
+                    newX = oldX;
+                    newY = oldY;
+                    break; // No need to check further obstacles
+                }
+            }
+
+            // Check if the new position is within the window bounds
+            if (newX >= -10 && newX + location.Width <= windowWidth - 15)
+            {
+                // Check for collision with each obstacle
+
+                location.X = newX; // Update X position if within bounds
+                obstacleBounds.X = newX;
+            }
+
+            if (newY >= -10 && newY + location.Height <= windowHeight)
+            {
+                // Check for collision with each obstacle
+
+                location.Y = newY; // Update Y position if within bounds
+                obstacleBounds.Y = newY + obstacleBounds.Height;
+            }
+            dashProgress = Math.Max(0, dashProgress - gameTime.ElapsedGameTime.TotalSeconds);
+            
+            if (dashProgress == 0)
+                invincible = false;
+        }
+
         public void UpdateAnimation(GameTime gameTime)
         {
             // Handle animation timing
@@ -398,6 +510,15 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 timeCounter -= timePerFrame;    // Remove the time we "used" 
             }
         }
+        public void UpdateAbilites(GameTime gameTime) 
+        {
+            screamAbilityProgress = Math.Min(screamAbilityProgress + gameTime.ElapsedGameTime.TotalSeconds/ screamAbilityCooldown, 1);
+            dashAbilityProgress = Math.Min((dashAbilityProgress + gameTime.ElapsedGameTime.TotalSeconds) / dashAbilityCooldown, 1);
+            
+
+        }
+       
+
         public void UpdateShootAnimation(GameTime gameTime) // different method to handle shoot animation
         {
             // Handle animation timing
@@ -453,7 +574,19 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                     xShift = -64;
                     DrawShooting(sb, SpriteEffects .FlipHorizontally);
                     break;
+                case playerState.Dashing:
+                    if (dashState == playerState.WalkLeft || dashState == playerState.FaceLeft)
+                    {
+                        DrawWalking(sb, SpriteEffects.FlipHorizontally);
+                    }
+                    else
+                    {
+                        DrawWalking(sb, SpriteEffects.None);
+                    }
+                    break;
             }
+
+            DrawAbilities(sb);
 
             if (projectiles != null)
             {
@@ -472,6 +605,21 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 new Vector2(X, Y + location.Height), Color.Black);
             }
         }
+
+        public void DrawAbilities(SpriteBatch sb)
+        {
+            //draw the dash UI background
+            sb.Draw(abilities, new Rectangle(60, windowHeight - 50, 48, 48), new Rectangle(0, 0, 16, 16), Color.White);
+
+            
+            //draw the dash UI foreground
+            sb.Draw(abilities, new Rectangle(60, (windowHeight - 50) + (48 - (int)Math.Round(48 * dashAbilityProgress)), 48, 48 - (48 - (int)Math.Round(48 * dashAbilityProgress))), new Rectangle(0, 16 + (16 - (int)Math.Round(16 * dashAbilityProgress)), 16, (int)Math.Round(16 * dashAbilityProgress)), Color.Cyan);
+
+            //draw the dash UI background
+            sb.Draw(abilities, new Rectangle(110, windowHeight - 50, 48, 48), new Rectangle(16, 0, 16, 16), Color.White);
+            sb.Draw(abilities, new Rectangle(110, (windowHeight - 50) + (48 - (int)Math.Round(48 * screamAbilityProgress)), 48, 48 - (48 - (int)Math.Round(48 * screamAbilityProgress))), new Rectangle(16, 16 + (16 - (int)Math.Round(16 * screamAbilityProgress)), 16, (int)Math.Round(16 * screamAbilityProgress)), Color.Green);
+        }
+
         private void DrawWalking(SpriteBatch sb, SpriteEffects flipSprite)
         {
             // draw walking animation
@@ -585,6 +733,20 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
                 Projectile projectile = new Projectile
                     (projectileSheet, projectileLoc,lookAngle, projectileState.FaceRight, windowWidth, windowHeight);
                 projectiles.Add(projectile);
+        }
+
+        private void ProcessScream()
+        {
+            projectileLoc = new Rectangle((int)(location.Center.X), (int)(location.Center.Y), 20, 16);
+
+            for (int i = 0; i < rng.Next(30, 50); i++)
+            {
+                Projectile projectile = new Projectile
+                    (projectileSheet, projectileLoc, lookAngle + rng.Next(-2, 5) + rng.NextDouble(), projectileState.FaceRight, windowWidth, windowHeight);
+                projectiles.Add(projectile);
+            }
+
+            screamAbilityProgress = 0;
         }
 
         private void ProcessGetHurt (GameTime gameTime)

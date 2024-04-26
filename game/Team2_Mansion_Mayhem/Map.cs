@@ -64,15 +64,23 @@ namespace Team2_Mansion_Mayhem
             walls.DrawSideWalls(sb);
             obstacles.Add(walls);
 
-            for(int i = 1; i < 4; i++)
+            //how many rows of tables to draw
+            for(int i = 50; i < 950; i+= 200)
             {
-                Obstacle obs = new Obstacle(spriteSheet, windowWidth, windowHeight);
-                obs.Position = new Rectangle(i * 100 - 10, i * 100 - 10, 26, 16);
-                obs.DrawTable(sb, new Vector2(i * 100, i * 100));
-                obs.DrawPaintings(sb);
+                //how many columns
+                for (int j = 150; j < 600; j+= 200)
+                {
+                    Obstacle obs = new Obstacle(spriteSheet, windowWidth, windowHeight);
+                    obs.Position = new Rectangle(i, j - 10, 26, 16);
+                    obs.DrawTable(sb, new Vector2(i, j));
+                    obs.DrawPaintings(sb);
 
-                obstacles.Add(obs);
+                    obstacles.Add(obs);
+                }
+                
             }
+
+            
         }
 
         public void DisplayHealth(Player p, SpriteBatch sb)

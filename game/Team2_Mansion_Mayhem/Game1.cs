@@ -38,7 +38,7 @@ namespace Team2_Mansion_Mayhem
 
         //levels
         private int currentLevel;
-
+        private double localdiffculty = 1;
         //misc
         private int windowHeight;
         private int windowWidth;
@@ -46,6 +46,7 @@ namespace Team2_Mansion_Mayhem
         private Texture2D title;
         private Texture2D gameOver;
         private Texture2D enemyHP;
+        private Texture2D abilities;
 
         // player
         private Player player;
@@ -175,12 +176,14 @@ namespace Team2_Mansion_Mayhem
 
             enemyHP = Content.Load<Texture2D>("Sprites/enemyhealthbars");
 
+            abilities = Content.Load<Texture2D>("Sprites/abilitiesUI");
+
             obstacle = new Obstacle(mapSprite, windowWidth, windowHeight);
 
             map = new Map(mapSprite, windowWidth, windowHeight);
             monster = new Monster(monsterSprite, enemyHP, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
             ghost = new Ghost(ghostSprite, enemyHP, ghostLoc, ghostHealth, ghostDefense, ghostDamage, ghostSpeed);
-            player = new Player(playerSprite, playerLoc, playerHealth, playerDefense, playerDamage, playerSpeed,
+            player = new Player(playerSprite, abilities, playerLoc, playerHealth, playerDefense, playerDamage, playerSpeed,
                 playerState.FaceRight, kbState, projectileSprite, windowWidth, windowHeight);
 
             enemies.Add(monster);
@@ -288,7 +291,7 @@ namespace Team2_Mansion_Mayhem
                     _spriteBatch.Draw(title, new Vector2(100, 100), Color.White);
                     _spriteBatch.DrawString(normalFont, 
                         "Kill supernatural creatures to get to the farthest wave!" +
-                        "\nMove: WASD \nShoot : Mouse \nStart Game: Space",
+                        "\nMove: WASD \nShoot: Left Mouse \nDash: Right Mouse \nAbility: E \nStart Game: Space",
                         new Vector2(110, 255), Color.White);
                     break;
 
@@ -374,6 +377,11 @@ namespace Team2_Mansion_Mayhem
         public void NextLevel()
         {
             currentLevel += 1;
+            if (currentLevel >= 7) 
+            {
+                localdiffculty += 0.25;
+            }
+            
             enemies.Clear(); // Clear the list
 
             // decide how many enemies in a level
@@ -384,7 +392,7 @@ namespace Team2_Mansion_Mayhem
             for (int i = 0; i < totalMonster; i++)
             {
                 monsterLoc = new Rectangle(rng.Next(10, windowWidth - 53), rng.Next(10, windowHeight - 64), 32, 53);
-                monster = new Monster(monsterSprite, enemyHP, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
+                monster = new Monster(monsterSprite, enemyHP, monsterLoc, (int)(monsterHealth * localdiffculty) + rng.Next(-5, 6), monsterDefense, (int)(monsterDamage), monsterSpeed, monsterState.WalkRight);
                 
                 // regenerate the monster position so it won't spawn inside an obstacle and got stuck
                 foreach(Obstacle obstacle in obstacles)
@@ -392,14 +400,14 @@ namespace Team2_Mansion_Mayhem
                     while (monster.Position.Intersects(obstacle.Position))
                     {
                         monsterLoc = new Rectangle(rng.Next(10, windowWidth - 53), rng.Next(10, windowHeight - 64), 32, 53);
-                        monster = new Monster(monsterSprite, enemyHP, monsterLoc, monsterHealth, monsterDefense, monsterDamage, monsterSpeed, monsterState.WalkRight);
+                        monster = new Monster(monsterSprite, enemyHP, monsterLoc, (int)(monsterHealth * localdiffculty) + rng.Next(-5, 6), monsterDefense, (int)(monsterDamage * localdiffculty), monsterSpeed, monsterState.WalkRight);
                     }
                 }
 
                 enemies.Add(monster);
 
                 ghostLoc = new Rectangle(rng.Next(10, windowWidth - 64), rng.Next(10, windowHeight - 64), 32, 30);
-                ghost = new Ghost(ghostSprite, enemyHP, ghostLoc, ghostHealth, ghostDefense, ghostDamage, ghostSpeed);
+                ghost = new Ghost(ghostSprite, enemyHP, ghostLoc, (int)(ghostHealth * localdiffculty) + rng.Next(-5, 6), ghostDefense, (int)(ghostDamage * localdiffculty), ghostSpeed);
                 enemies.Add(ghost);
             }
         }
