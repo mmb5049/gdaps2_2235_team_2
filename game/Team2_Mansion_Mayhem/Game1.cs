@@ -305,11 +305,11 @@ namespace Team2_Mansion_Mayhem
                     }
 
                     /*_spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
-                        new Vector2(10, 10), Color.White);
+                        new Vector2(10, 10), Color.White);*/
                     _spriteBatch.DrawString
-                        (debugFont, string.Format("{0},", monster.State) 
+                        (debugFont, string.Format("{0}, \n {1}, {2}", monster.State, monster.attackRangeWidth, monster.attackRangeHeight) 
                         ,
-                        new Vector2(300, 10), Color.White);*/
+                        new Vector2(300, 10), Color.White);
 
                     _spriteBatch.DrawString(normalFont, 
                         string.Format("Health: {0}" +

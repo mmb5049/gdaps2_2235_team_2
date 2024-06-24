@@ -96,6 +96,17 @@ namespace Team2_Mansion_Mayhem
         {
             get { return attackRange.Y; }
         }
+
+        public int attackRangeWidth
+        {
+            get { return attackRange.Width; }
+        }
+
+        public int attackRangeHeight
+        {
+            get { return attackRange.Height; }
+        }
+
         public monsterState State
         {
             get { return state; }   
@@ -116,10 +127,11 @@ namespace Team2_Mansion_Mayhem
                     spriteColor = rageColor;
                 }
 
+                // create a hitbox for attack range
                 attackRange.X = position.X - 10;
                 attackRange.Y = position.Y - 10;
-                attackRange.Width = position.Width - 5;
-                attackRange.Height = position.Height - 5;
+                attackRange.Width = position.Width + 15;
+                attackRange.Height = position.Height + 15;
 
                 switch (state)
                 {
@@ -192,7 +204,7 @@ namespace Team2_Mansion_Mayhem
 
         public override void Chase(Rectangle playerPosition, int windowWidth, int windowHeight, List<Obstacle> obstacles)
         {
-            if (state != monsterState.AttackLeft || state != monsterState.AttackRight || state != monsterState.Dying && alive == true) 
+            if (state != monsterState.AttackLeft && state != monsterState.AttackRight && state != monsterState.Dying && alive == true) 
             {
                 float deltaX = playerPosition.X - position.X;
                 float deltaY = playerPosition.Center.Y - position.Center.Y;
@@ -384,11 +396,11 @@ namespace Team2_Mansion_Mayhem
         {
             if (health > 0)
             {
-                if (playerLoc.X > position.X && state != monsterState.Dying)
+                if (playerLoc.X > position.X && state != monsterState.Dying && state != monsterState.AttackRight && state != monsterState.AttackLeft)
                 {
                     state = monsterState.WalkRight;
                 }
-                else if (playerLoc.X < position.X && state != monsterState.Dying)
+                else if (playerLoc.X < position.X && state != monsterState.Dying && state != monsterState.AttackRight && state != monsterState.AttackLeft)
                 {
                     state = monsterState.WalkLeft;
                 }
@@ -419,12 +431,18 @@ namespace Team2_Mansion_Mayhem
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
 
+            attackRange.Width += 70;
+            attackRange.Height += 70;
+
             if (timer >= attackTimer)
             {
                 state = monsterState.WalkRight;
                 timer = 0;
                 attackFrame = 0;
                 canDamage = true;
+
+                attackRange.Width -= 70;
+                attackRange.Height -= 70;
             }
             
             if ((attackFrame == attackEventFrame) && canDamage)
@@ -437,19 +455,26 @@ namespace Team2_Mansion_Mayhem
                     player.IsHurt = true;
                     
                 }
+
             }
         }
 
         public void ProcessAttackLeft(GameTime gameTime, double attackTimer, Player player)
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
-            
+
+            attackRange.Width += 70;
+            attackRange.Height += 70;
+
             if (timer >= attackTimer)
             {
                 state = monsterState.WalkLeft;
                 timer = 0;
                 attackFrame = 0;
                 canDamage = true;
+
+                attackRange.Width -= 70;
+                attackRange.Height -= 70;
             }
             
             if ((timer - 0.3) > 0.3 && canDamage)
@@ -460,7 +485,9 @@ namespace Team2_Mansion_Mayhem
                     player.DamageTaken(damage);
                     
                     player.IsHurt = true;
+
                 }
+
             }
         }
 

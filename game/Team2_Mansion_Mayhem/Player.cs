@@ -453,8 +453,8 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             int oldY = location.Y;
 
             // Calculate the new position
-            int newX = location.X + (speed * 2) * movementX;
-            int newY = location.Y + (speed * 2) * movementY;
+            int newX = location.X + (speed * 3) * movementX;
+            int newY = location.Y + (speed * 3) * movementY;
 
             Rectangle newPlayerBounds = new Rectangle(newX, newY + obstacleBounds.Height, obstacleBounds.Width, obstacleBounds.Height);
 
