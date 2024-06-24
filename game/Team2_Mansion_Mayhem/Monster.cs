@@ -38,6 +38,11 @@ namespace Team2_Mansion_Mayhem
         
         private monsterState state;
         private bool canDamage;
+        private bool canAttack;
+        private double canAttackTimer;
+        private double canAttackTimerThreshold;
+        private int playerSpeed = 3;
+        private bool stopMovingLCV = true;
         private Rectangle attackRange = new Rectangle();
 
         // Animation
@@ -82,7 +87,9 @@ namespace Team2_Mansion_Mayhem
             this.rageThreshold = 0.5;
             this.ragePower = 2;
             this.rageColor = Color.PaleVioletRed;
-
+            this.canAttack = true;
+            this.canAttackTimer = 0;
+            this.canAttackTimerThreshold = 2.0;
             fps = 10.0;
             timePerFrame = 1.0 / fps;
         }
@@ -111,6 +118,11 @@ namespace Team2_Mansion_Mayhem
         {
             get { return state; }   
         }
+
+        public int PlayerSpeed
+        {
+            get { return playerSpeed; }
+        }
         public override void Update(GameTime gameTime, Player player, List<Obstacle> obstacles)
         {
             if (health > 0)
@@ -118,6 +130,44 @@ namespace Team2_Mansion_Mayhem
                 UpdateAnimation(gameTime);
                 attackTimer = 0.7;
                 
+                // temporary lock the player up when the monster attack
+                if (state == monsterState.AttackLeft ||  state == monsterState.AttackRight)
+                {
+                    if (stopMovingLCV == true)
+                    {
+                        stopMovingLCV = false;
+
+                        if(player.Speed != 0) // avoid getting the player stuck even after the monster attack
+                        {
+                            playerSpeed = player.Speed;
+                        }
+                        
+                        player.Speed = 0;
+                    }
+                }
+
+                else
+                {
+                    if (!stopMovingLCV)
+                    {
+                        stopMovingLCV= true;
+
+                    }
+                    player.Speed = playerSpeed;
+                }
+                
+                // do a timer between attacks for monster
+                if (canAttack == false)
+                {
+                    canAttackTimer += gameTime.ElapsedGameTime.TotalSeconds;
+                }
+
+                if (canAttackTimer > canAttackTimerThreshold) 
+                {
+                    canAttack = true;
+                    canAttackTimer = 0;
+                }
+
                 // Enrage logic, if at rage threshold and not enraged yet
                 if (((double)health / maxHealth <= rageThreshold) && !enraged && state != monsterState.Dying)
                 {
@@ -413,8 +463,9 @@ namespace Team2_Mansion_Mayhem
 
         public void StartAttack(Rectangle playerPosition)
         {
-            if (attackRange.Intersects(playerPosition))
+            if (attackRange.Intersects(playerPosition) && canAttack == true)
             {
+
                 if (state == monsterState.WalkRight)
                 {
                     state = monsterState.AttackRight;
@@ -432,8 +483,9 @@ namespace Team2_Mansion_Mayhem
             timer += gameTime.ElapsedGameTime.TotalSeconds;
 
             // increase the range to make the player harder to escape
-            attackRange.Width += 70;
-            attackRange.Height += 70;
+            attackRange.Width += 140;
+            attackRange.Height += 140;
+
 
             if (timer >= attackTimer)
             {
@@ -442,9 +494,15 @@ namespace Team2_Mansion_Mayhem
                 attackFrame = 0;
                 canDamage = true;
 
-                // reduce the range back to normal
-                attackRange.Width -= 70;
-                attackRange.Height -= 70;
+                // reduce the range and speed back to normal
+                attackRange.Width -= 140;
+                attackRange.Height -= 140;
+
+                
+
+                canAttack = false;
+
+                
             }
             
             if ((attackFrame == attackEventFrame) && canDamage)
@@ -466,8 +524,10 @@ namespace Team2_Mansion_Mayhem
             timer += gameTime.ElapsedGameTime.TotalSeconds;
             
             // increase the range to make the player harder to escape
-            attackRange.Width += 70;
-            attackRange.Height += 70;
+            attackRange.Width += 140;
+            attackRange.Height += 140;
+
+
 
             if (timer >= attackTimer)
             {
@@ -476,9 +536,13 @@ namespace Team2_Mansion_Mayhem
                 attackFrame = 0;
                 canDamage = true;
 
-                // reduce the range back to normal
-                attackRange.Width -= 70;
-                attackRange.Height -= 70;
+                // reduce the range and speed back to normal
+                attackRange.Width -= 140;
+                attackRange.Height -= 140;
+
+                
+
+                canAttack = false;
             }
             
             if ((timer - 0.3) > 0.3 && canDamage)

@@ -307,7 +307,7 @@ namespace Team2_Mansion_Mayhem
                     /*_spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
                         new Vector2(10, 10), Color.White);*/
                     _spriteBatch.DrawString
-                        (debugFont, string.Format("{0}, \n {1}, {2}", monster.State, monster.attackRangeWidth, monster.attackRangeHeight) 
+                        (debugFont, string.Format("{0}, \n {1}", monster.State, monster.PlayerSpeed ) 
                         ,
                         new Vector2(300, 10), Color.White);
 

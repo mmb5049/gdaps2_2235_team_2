@@ -50,7 +50,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private bool alive = true;
         private bool invincible = false;
         private int damageIntake = 0;
-
+        private int maxSpeed;
         // abilities
         private double dashAbilityProgress = 0;
         private double dashAbilityCooldown = 1;
@@ -102,6 +102,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             this.defense = defense;
             this.damage = damage;   
             this.speed = speed;
+            this.maxSpeed = speed;
             this.spriteSheet = spriteSheet;
             this.location = location;
             this.obstacleBounds = new Rectangle(location.X, location.Y + location.Height/2, location.Width, location.Height/2 - 4);
@@ -189,6 +190,11 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             get { return alive; } 
         }
 
+        public int Speed
+        {
+            get { return speed;}
+            set { speed = value; }  
+        }
         public virtual string DebugStats
         {
             //return a list of stats to be printed 
@@ -215,6 +221,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
             location.Y = (int)resetPoint.Y;
             isHurt = false;
             alive = true;
+            speed = maxSpeed;
         }
 
         /// <summary>
