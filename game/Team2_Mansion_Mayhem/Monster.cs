@@ -431,6 +431,7 @@ namespace Team2_Mansion_Mayhem
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
 
+            // increase the range to make the player harder to escape
             attackRange.Width += 70;
             attackRange.Height += 70;
 
@@ -441,6 +442,7 @@ namespace Team2_Mansion_Mayhem
                 attackFrame = 0;
                 canDamage = true;
 
+                // reduce the range back to normal
                 attackRange.Width -= 70;
                 attackRange.Height -= 70;
             }
@@ -462,7 +464,8 @@ namespace Team2_Mansion_Mayhem
         public void ProcessAttackLeft(GameTime gameTime, double attackTimer, Player player)
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
-
+            
+            // increase the range to make the player harder to escape
             attackRange.Width += 70;
             attackRange.Height += 70;
 
@@ -473,6 +476,7 @@ namespace Team2_Mansion_Mayhem
                 attackFrame = 0;
                 canDamage = true;
 
+                // reduce the range back to normal
                 attackRange.Width -= 70;
                 attackRange.Height -= 70;
             }
