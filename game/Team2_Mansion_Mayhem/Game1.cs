@@ -99,8 +99,13 @@ namespace Team2_Mansion_Mayhem
             kbState = new KeyboardState();
             debugEnabled = false;
 
+            _graphics.PreferredBackBufferHeight = 600;
+            _graphics.PreferredBackBufferWidth = 1000;
+
             windowHeight = _graphics.PreferredBackBufferHeight;
             windowWidth = _graphics.PreferredBackBufferWidth;
+
+            
         }
 
         protected override void Initialize()
@@ -291,7 +296,7 @@ namespace Team2_Mansion_Mayhem
                     _spriteBatch.Draw(title, new Vector2(100, 100), Color.White);
                     _spriteBatch.DrawString(normalFont, 
                         "Kill supernatural creatures to get to the farthest wave!" +
-                        "\nMove: WASD \nShoot: Left Mouse \nDash: Right Mouse \nAbility: E \nStart Game: Space",
+                        "\n\nMove: WASD \n\nShoot: Left Mouse \n\nDash: Right Mouse \n\nAbility: E \n\nStart Game: Space",
                         new Vector2(110, 255), Color.White);
                     break;
 
@@ -305,11 +310,11 @@ namespace Team2_Mansion_Mayhem
                     }
 
                     /*_spriteBatch.DrawString(debugFont, string.Format("playerState: {0}", player.State),
-                        new Vector2(10, 10), Color.White);*/
+                        new Vector2(10, 10), Color.White);
                     _spriteBatch.DrawString
                         (debugFont, string.Format("{0}, \n {1}", monster.State, monster.PlayerSpeed ) 
                         ,
-                        new Vector2(300, 10), Color.White);
+                        new Vector2(300, 10), Color.White);*/
 
                     _spriteBatch.DrawString(normalFont, 
                         string.Format("Health: {0}" +

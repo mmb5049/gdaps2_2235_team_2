@@ -51,6 +51,7 @@ namespace Team2_Mansion_Mayhem.Content.Sprites
         private bool invincible = false;
         private int damageIntake = 0;
         private int maxSpeed;
+
         // abilities
         private double dashAbilityProgress = 0;
         private double dashAbilityCooldown = 1;

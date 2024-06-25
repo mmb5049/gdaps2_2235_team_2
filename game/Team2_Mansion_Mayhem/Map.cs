@@ -65,10 +65,10 @@ namespace Team2_Mansion_Mayhem
             obstacles.Add(walls);
 
             //how many rows of tables to draw
-            for(int i = 50; i < 950; i+= 200)
+            for(int i = 50; i < windowWidth; i+= 200)
             {
                 //how many columns
-                for (int j = 150; j < 600; j+= 200)
+                for (int j = 150; j < windowHeight; j+= 200)
                 {
                     Obstacle obs = new Obstacle(spriteSheet, windowWidth, windowHeight);
                     obs.Position = new Rectangle(i, j - 10, 26, 16);
